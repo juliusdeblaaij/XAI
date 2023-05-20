@@ -197,6 +197,9 @@ if __name__ == "__main__":
     experts_explicandum_graph = get_explicandum_graph("./data/explicanda/expert")
     experts_aspects_amount = len(get_aspects(experts_explicandum_graph))
 
+    explainable_information_graph = get_explainable_information_graph("./data/explainable_information")
+    explainable_information_aspects_amount = len(get_aspects(experts_explicandum_graph))
+
     aspects_variable = FuzzyVariable(
             universe_range=(0, 20),
             terms = {
@@ -226,6 +229,7 @@ if __name__ == "__main__":
     }
 
     fuzzy_variables['aspects'].plot()
+    plt.axvline(explainable_information_aspects_amount, color='r')
     plt.savefig('aspects.png')
     plt.clf()
 
