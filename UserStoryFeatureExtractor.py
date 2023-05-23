@@ -1,6 +1,9 @@
 # Slpit the data into training and test sets
 import json
 import re
+import gensim.models.doc2vec
+
+assert gensim.models.doc2vec.FAST_VERSION > -1, "This will be painfully slow otherwise"
 
 from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split
@@ -28,9 +31,10 @@ def process_row(row):
         if j == 0:
             id = str(variable)
         if j == 1:
+            description = str(variable)
             description = pre_process_text(description)
 
-            embedding = doc2vec(description, 'd2v_dbow/d2v.model')
+            embedding = doc2vec(description, 'd2v.model')
 
         if j == 2:
             story_point = str(variable)
@@ -48,7 +52,7 @@ def worker():
         if row is None:
             break
         process_row(row)
-        print(f'\nRemaining rows: {100.0 - round(queue.qsize()/len(rows)*100, 1)}')
+        print(f'\nRemaining rows: {round(100.0 - queue.qsize()/len(rows)*100, 1)}% of {len(rows)}')
         queue.task_done()
 
 # Create a queue to hold the rows
