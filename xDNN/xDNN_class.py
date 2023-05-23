@@ -56,6 +56,10 @@ def PrototypesIdentification(Image,GlobalFeature,LABEL,CL):
             image[i][j] = Image[seq[j][0]]
         label[i] = np.ones((len(seq),1))*i
     for i in range(0, CL+1):
+        if len(data) == 0:
+            continue
+        if len(data[i]) == 0:
+            continue
         Prototypes[i] = xDNNclassifier(data[i],image[i])
     return Prototypes
         
@@ -97,7 +101,7 @@ def xDNNclassifier(Data,Image):
         else:
             Centre[position,] = Centre[position,]*(Support[position]/Support[position]+1)+data[i-1]/(Support[position]+1)
             Support[position]=Support[position]+1
-            Radius[position]=0.5*Radius[position]+0.5*(X[position,]-sum(Centre[position,]**2))/2  
+            Radius[position]=0.5*Radius[position]+0.5*(X-sum(Centre[position,]**2))/2
     dic = {}
     dic['Noc'] =  Noc
     dic['Centre'] =  Centre
@@ -123,8 +127,12 @@ def DecisionMaking(Params,datates):
         data = datates[i-1,]
         R=np.zeros((VV,CurrentNC))
         Value=np.zeros((CurrentNC,1))
-        for k in range(0,CurrentNC):
-            distance=np.sort(cdist(data.reshape(1, -1),PARAM[k]['Centre'],'minkowski',6))[0]
+        for k in range(1,CurrentNC - 1):
+            if not str(k) in PARAM:
+                continue
+
+            kwargs = {"p": 6}
+            distance=np.sort(cdist(XA = data.reshape(1, -1), XB = PARAM[k]['Centre'], metric = 'minkowski', **kwargs))[0]
             #distance=np.sort(cdist(data.reshape(1, -1),PARAM[k]['Centre'],'euclidean'))[0]
             Value[k]=distance[0]
         Value = softmax(-1*Value**2).T
@@ -136,8 +144,9 @@ def DecisionMaking(Params,datates):
     LABEL1=np.zeros((CurrentNC,1))
     
     
-    for i in range(0,CurrentNC): 
-        LABEL1[i] = np.unique(LAB[i])
+    for i in range(0,CurrentNC - 1):
+        if LAB[i].size > 0:  # Check if LAB[i] is not empty
+            LABEL1[i] = np.unique(LAB[i])
 
     EstimatedLabels = EstimatedLabels.astype(int)
     EstimatedLabels = LABEL1[EstimatedLabels]   

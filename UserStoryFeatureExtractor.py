@@ -21,6 +21,7 @@ def process_row(row):
     id = ""
     embedding = []
     story_point = ""
+    description = ""
 
     for j, variable in enumerate(row):
         variable = re.sub('[^a-zA-Z0-9 -]', '', variable)
@@ -38,10 +39,10 @@ def process_row(row):
 
             if story_point == "-1":
                 X_non_user_stories.append(embedding)
-                y_non_user_stories.append(story_point)
+                y_non_user_stories.append([description, story_point])
             else:
                 X_user_stories.append(embedding)
-                y_user_stories.append(story_point)
+                y_user_stories.append([description, story_point])
 
 def worker():
     while True:
@@ -49,7 +50,7 @@ def worker():
         if row is None:
             break
         process_row(row)
-        print(f'\nRemaining rows: {round(queue.qsize()/len(rows)*100, 1)}')
+        print(f'\nRemaining rows: {100.0 - round(queue.qsize()/len(rows)*100, 1)}')
         queue.task_done()
 
 # Create a queue to hold the rows
