@@ -7,10 +7,9 @@ from sklearn.model_selection import train_test_split
 import csv
 import pandas as pd
 from doc2vec import doc2vec
+from queue import Queue
+import threading
 
-with open('./data/spring_org_xDNN.csv', newline='\n', encoding="utf8") as csvfile:
-    documents_reader = csv.reader(csvfile, delimiter=';', quotechar='"')
-    rows = list(documents_reader)
 
 X_user_stories = []
 y_user_stories = []
@@ -18,10 +17,7 @@ X_non_user_stories = []
 y_non_user_stories = []
 
 
-for i, row in enumerate(rows):
-    if i == 0:
-        continue
-
+def process_row(row):
     id = ""
     embedding = []
     story_point = ""
@@ -36,7 +32,6 @@ for i, row in enumerate(rows):
             description.lower()
 
             embedding = doc2vec(description, 'd2v.model')
-            print(f'{i / len(rows) * 100}% embedded.')
 
         if j == 2:
             story_point = str(variable)
@@ -47,6 +42,45 @@ for i, row in enumerate(rows):
             else:
                 X_user_stories.append(embedding)
                 y_user_stories.append(story_point)
+
+def worker():
+    while True:
+        row = queue.get()
+        if row is None:
+            break
+        process_row(row)
+        print(f'\nRemaining rows: {round(queue.qsize()/len(rows)*100, 1)}')
+        queue.task_done()
+
+# Create a queue to hold the rows
+queue = Queue()
+
+# Read the CSV file and put each row into the queue
+with open('./data/spring_org_xDNN.csv', newline='\n', encoding="utf8") as csvfile:
+    documents_reader = csv.reader(csvfile, delimiter=';', quotechar='"')
+    rows = list(documents_reader)
+
+    for i, row in enumerate(rows):
+        if i == 0:
+            continue
+        queue.put(row)
+
+# Create worker threads
+num_threads = 12  # Choose the number of threads you want to use
+threads = []
+for _ in range(num_threads):
+    t = threading.Thread(target=worker)
+    t.start()
+    threads.append(t)
+
+# Wait for all tasks in the queue to be processed
+queue.join()
+
+# Stop worker threads
+for _ in range(num_threads):
+    queue.put(None)
+for t in threads:
+    t.join()
 
 X_train_user_stories, X_test_user_stories, y_train_user_stories, y_test_user_stories = train_test_split(
     X_user_stories,
@@ -76,7 +110,8 @@ def combine_and_shuffle_X_y(X_data_1, y_data_1, X_data_2, y_data_2):
 
     shuffled_data = shuffle(X_data_y_data, random_state=42)
 
-    X_data, y_data = []
+    X_data = []
+    y_data = []
 
     for datapoint in shuffled_data:
         X_data.append(datapoint[0])
