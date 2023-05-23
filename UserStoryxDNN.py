@@ -26,10 +26,10 @@ from xDNN.xDNN_class import xDNN
 
 # Load the files, including features, images and labels.
 
-X_train_file_path = r'data_df_X_test.csv'
-y_train_file_path = r'data_df_y_test.csv'
-X_test_file_path = r'data_df_X_train.csv'
-y_test_file_path = r'data_df_y_train.csv'
+X_train_file_path = r'data_df_X_train.csv'
+y_train_file_path = r'data_df_y_train.csv'
+X_test_file_path = r'data_df_X_test.csv'
+y_test_file_path = r'data_df_y_test.csv'
 
 X_train = genfromtxt(X_train_file_path, delimiter=',')
 y_train = pd.read_csv(y_train_file_path, delimiter=',',header=None)

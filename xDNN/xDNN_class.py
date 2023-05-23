@@ -60,9 +60,10 @@ def PrototypesIdentification(Image,GlobalFeature,LABEL,CL):
             continue
         if len(data[i]) == 0:
             continue
+
         Prototypes[i] = xDNNclassifier(data[i],image[i])
     return Prototypes
-        
+
 
 def xDNNclassifier(Data,Image):
     L, N, W = np.shape(Data)
@@ -90,7 +91,7 @@ def xDNNclassifier(Data,Image):
             distance = cdist(data[i-1,].reshape(1,-1),Centre,'euclidean')[0]
         value,position= distance.max(0),distance.argmax(0)
         value=value**2
-        
+
         if DataDensity > CDmax or DataDensity < CDmin or value > 2*Radius[position]:
             Centre=np.vstack((Centre,data[i-1,]))
             Noc=Noc+1
@@ -101,7 +102,12 @@ def xDNNclassifier(Data,Image):
         else:
             Centre[position,] = Centre[position,]*(Support[position]/Support[position]+1)+data[i-1]/(Support[position]+1)
             Support[position]=Support[position]+1
-            Radius[position]=0.5*Radius[position]+0.5*(X-sum(Centre[position,]**2))/2
+
+            if type(X) == type(np.array([1, 2])):
+                Radius[position]=0.5*Radius[position]+0.5 * (X[position][0] - sum(Centre[position,]**2))/2
+            else:
+                Radius[position]=0.5*Radius[position]+0.5 * (X - sum(Centre[position,]**2))/2
+
     dic = {}
     dic['Noc'] =  Noc
     dic['Centre'] =  Centre
@@ -111,9 +117,9 @@ def xDNNclassifier(Data,Image):
     dic['Prototype'] = VisualPrototype
     dic['L'] =  L
     dic['X'] =  X
-    return dic  
- 
-    
+    return dic
+
+
 
 def DecisionMaking(Params,datates):
     PARAM=Params['Parameters']
@@ -127,12 +133,12 @@ def DecisionMaking(Params,datates):
         data = datates[i-1,]
         R=np.zeros((VV,CurrentNC))
         Value=np.zeros((CurrentNC,1))
-        for k in range(1,CurrentNC - 1):
+        for k in range(1, CurrentNC):
             if not str(k) in PARAM:
                 continue
 
             kwargs = {"p": 6}
-            distance=np.sort(cdist(XA = data.reshape(1, -1), XB = PARAM[k]['Centre'], metric = 'minkowski', **kwargs))[0]
+            distance = np.sort(cdist(XA=data.reshape(1, -1), XB=PARAM[k]['Centre'], metric='minkowski', **kwargs))[0]
             #distance=np.sort(cdist(data.reshape(1, -1),PARAM[k]['Centre'],'euclidean'))[0]
             Value[k]=distance[0]
         Value = softmax(-1*Value**2).T
@@ -142,18 +148,14 @@ def DecisionMaking(Params,datates):
         indx = np.argsort(Value)[::-1]
         EstimatedLabels[i-1]=indx[0]
     LABEL1=np.zeros((CurrentNC,1))
-    
-    
-    for i in range(0,CurrentNC - 1):
+
+    for i in range(1, CurrentNC):
         if LAB[i].size > 0:  # Check if LAB[i] is not empty
             LABEL1[i] = np.unique(LAB[i])
 
     EstimatedLabels = EstimatedLabels.astype(int)
-    EstimatedLabels = LABEL1[EstimatedLabels]   
+    EstimatedLabels = LABEL1[EstimatedLabels]
     dic = {}
     dic['EstimatedLabels'] = EstimatedLabels
     dic['Scores'] = Scores
     return dic
-         
-###############################################################################
-

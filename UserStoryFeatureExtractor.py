@@ -10,6 +10,7 @@ from doc2vec import doc2vec
 from queue import Queue
 import threading
 
+from myutils import pre_process_text
 
 X_user_stories = []
 y_user_stories = []
@@ -24,20 +25,17 @@ def process_row(row):
     description = ""
 
     for j, variable in enumerate(row):
-        variable = re.sub('[^a-zA-Z0-9 -]', '', variable)
-
         if j == 0:
             id = str(variable)
         if j == 1:
-            description = " ".join(str(variable).split())
-            description.lower()
+            description = pre_process_text(description)
 
-            embedding = doc2vec(description, 'd2v.model')
+            embedding = doc2vec(description, 'd2v_dbow/d2v.model')
 
         if j == 2:
             story_point = str(variable)
 
-            if story_point == "-1":
+            if story_point == "1":
                 X_non_user_stories.append(embedding)
                 y_non_user_stories.append([description, story_point])
             else:

@@ -2,6 +2,8 @@ from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 from nltk.tokenize import word_tokenize
 import csv
 
+from myutils import pre_process_text
+
 #doc2vec parameters
 vector_size = 300
 window_size = 15
@@ -9,7 +11,7 @@ min_count = 1
 sampling_threshold = 1e-5
 negative_size = 5
 train_epoch = 100
-dm = 0 #0 = dbow; 1 = dmpv
+dm = 1 #0 = dbow; 1 = dmpv
 worker_count = 8 #number of parallel processes
 
 max_epochs = 100
@@ -19,7 +21,10 @@ def train(path_to_docs, model_file_name):
         documents_reader = csv.reader(csvfile, delimiter=',', quotechar='"')
         data = list(documents_reader)
 
-    tagged_data = [TaggedDocument(doc, [i]) for i, doc in enumerate(data)]
+    tagged_data = []
+
+    for i, text in enumerate(data):
+        tagged_data.append(TaggedDocument(pre_process_text(text), [i]))
 
     model = Doc2Vec(size=vector_size,
                     window=window_size,
@@ -45,7 +50,11 @@ def train(path_to_docs, model_file_name):
     print(f"Model saved to: {model_file_name}")
 
 def doc2vec(text, model_file_path):
+    text = pre_process_text(text)
 
-    text = text.split(' ')
+    words = text.split(' ')
     model = Doc2Vec.load(model_file_path)
-    return model.infer_vector(text)
+    return model.infer_vector(words)
+
+if __name__ == "__main__":
+    train('data/all_orgs_documents.csv', 'd2v.model')
