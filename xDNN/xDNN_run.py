@@ -24,15 +24,15 @@ import time
 
 # Load the files, including features, images and labels. 
 
-X_train_file_path = r'data_df_X_test_covid.csv'
-y_train_file_path = r'data_df_y_test_covid.csv'
-X_test_file_path = r'data_df_X_train_covid.csv'
-y_test_file_path = r'data_df_y_train_covid.csv'
+X_train_file_path = r'data_df_X_test_lite.csv'
+y_train_file_path = r'data_df_y_test_lite.csv'
+X_test_file_path = r'data_df_X_train_lite.csv'
+y_test_file_path = r'data_df_y_train_lite.csv'
 
 X_train = genfromtxt(X_train_file_path, delimiter=',')
-y_train = pd.read_csv(y_train_file_path, delimiter=',',header=None)
+y_train = pd.read_csv(y_train_file_path, delimiter=';',header=None)
 X_test = genfromtxt(X_test_file_path, delimiter=',')
-y_test = pd.read_csv(y_test_file_path, delimiter=',',header=None)
+y_test = pd.read_csv(y_test_file_path, delimiter=';',header=None)
 
 
 # Print the shape of the data
@@ -85,14 +85,14 @@ print("Time: ",round(end - start,2), "seconds")
 
 Input2 = {}
 Input2['xDNNParms'] = Output1['xDNNParms']
-Input2['Images'] = y_test_images 
+Input2['Images'] = y_test_images
 Input2['Features'] = X_test
-Input2['Labels'] = y_test_labels 
+Input2['Labels'] = y_test_labels
 
 
 
 startValidation = time.time()
-Mode2 = 'Validation' 
+Mode2 = 'Validation'
 Output2 = xDNN(Input2,Mode2)
 endValidation = time.time()
 
@@ -120,4 +120,3 @@ print('Cohens kappa: %f' % kappa)
 # confusion matrix
 matrix = confusion_matrix(y_test_labels , Output2['EstLabs'])
 print("Confusion Matrix: ",matrix)
-

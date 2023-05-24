@@ -3,8 +3,6 @@ import json
 import re
 import gensim.models.doc2vec
 
-assert gensim.models.doc2vec.FAST_VERSION > -1, "This will be painfully slow otherwise"
-
 from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split
 import csv
@@ -59,7 +57,7 @@ def worker():
 queue = Queue()
 
 # Read the CSV file and put each row into the queue
-with open('./data/spring_org_xDNN.csv', newline='\n', encoding="utf8") as csvfile:
+with open('./data/dataset.csv', newline='\n', encoding="utf8") as csvfile:
     documents_reader = csv.reader(csvfile, delimiter=';', quotechar='"')
     rows = list(documents_reader)
 

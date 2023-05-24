@@ -27,3 +27,5 @@ venv.bak/
 *.pkl
 # graphml files
 *.graphml
+xDNN/covid
+*.sav

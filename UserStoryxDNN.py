@@ -94,7 +94,7 @@ Input2['Labels'] = y_test_labels
 
 
 startValidation = time.time()
-Mode2 = 'Validation'
+Mode2 = 'classify'
 Output2 = xDNN(Input2,Mode2)
 endValidation = time.time()
 

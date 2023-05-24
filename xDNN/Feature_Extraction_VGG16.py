@@ -24,9 +24,10 @@ intermediate_layer_model.summary()
 
 
 #Load the data directory  where the images are stored
-data_dir = 'iroads_lite/'
+data_dir = './covid'
 contents = os.listdir(data_dir)
-classes = [each for each in contents if os.path.isdir(data_dir + each)]
+# classes = [each for each in contents if os.path.isdir(data_dir + each)]
+classes = contents
 #Each folder becomes a different class
 
 print(contents)
@@ -41,7 +42,7 @@ j =0
 
 for each in classes: #Loop for the folders
   print("Starting {} images".format(each))
-  class_path = data_dir + each
+  class_path = data_dir + "/" + each
   files = os.listdir(class_path)
   
   for ii, file in enumerate(files, 1): #Loop for the imgs inside the folders
