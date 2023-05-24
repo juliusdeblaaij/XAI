@@ -12,7 +12,7 @@ min_count = 20
 sampling_threshold = 1e-6
 negative_size = 5
 train_epoch = 10
-dm = 1 #0 = dbow; 1 = dmpv
+dm = 0 #0 = dbow; 1 = dmpv
 worker_count = 8 #number of parallel processes
 
 max_epochs = 1000
@@ -27,7 +27,7 @@ def clean_corpus(corpus_file_name):
     cleaned_data = []
 
     for row in data:
-        cleaned_string = pre_process_text(row)
+        cleaned_string = pre_process_text([row[0]])
         cleaned_data.append([cleaned_string])
 
     with open("cleaned_" + corpus_file_name, newline='\n', encoding="utf8", mode="w") as csvfile:
@@ -108,8 +108,8 @@ def doc2vec(text, model_file_path):
 
     words = text.split(' ')
     model = Doc2Vec.load(model_file_path)
-    return model.infer_vector(words)
+    return model.infer_vector(doc_words=words)
 
 if __name__ == "__main__":
-    train('cleaned_all_orgs_documents.csv', 'd2v.model')
+    train('cleaned_all_orgs_documents.csv', 'd2v_23k_dbow.model')
     # clean_corpus('all_orgs_documents.csv')

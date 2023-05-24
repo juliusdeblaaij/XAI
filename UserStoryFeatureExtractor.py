@@ -32,7 +32,7 @@ def process_row(row):
             description = str(variable)
             description = pre_process_text(description)
 
-            embedding = doc2vec(description, 'd2v.model')
+            embedding = doc2vec(description, 'd2v_23k_dbow.model')
 
         if j == 2:
             story_point = str(variable)
