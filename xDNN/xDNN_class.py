@@ -41,6 +41,16 @@ def xDNN(Input, Mode):
         Output['ConfMa'] = confusion_matrix(Input['Labels'], Output['EstLabs'])
         Output['ClassAcc'] = np.sum(Output['ConfMa'] * np.identity(len(Output['ConfMa']))) / len(Input['Labels'])
         return Output
+    elif Mode == 'Classify':
+        Params = Input['xDNNParms']
+        datates = Input['Features']
+        Test_Results = DecisionMaking(Params, datates)
+        EstimatedLabels = Test_Results['EstimatedLabels']
+        Scores = Test_Results['Scores']
+        Output = {}
+        Output['EstLabs'] = EstimatedLabels
+        Output['Scores'] = Scores
+        return Output
 
 
 def PrototypesIdentification(Image, GlobalFeature, LABEL, CL):

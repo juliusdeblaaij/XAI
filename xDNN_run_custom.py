@@ -9,7 +9,7 @@ Angelov, P., & Soares, E. (2020). Towards explainable deep neural networks (xDNN
 ###############################################################################
 import pandas as pd
 
-from xDNN_class import *
+from xDNN.xDNN_class import *
 from numpy import genfromtxt
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import precision_score
@@ -21,13 +21,17 @@ from nltk.metrics import ConfusionMatrix
 from sklearn.metrics import roc_curve, auc
 import matplotlib.pyplot as plt
 import time
+import sys,os
 
 # Load the files, including features, images and labels. 
 
-X_train_file_path = r'../data_df_X_train.csv'
-y_train_file_path = r'../data_df_y_train.csv'
-X_test_file_path = r'../data_df_X_test.csv'
-y_test_file_path = r'../data_df_y_test.csv'
+import inspect
+import os
+dirname = os.path.dirname(os.path.abspath(inspect.stack()[0][1]))
+X_train_file_path = os.path.join(dirname, 'data_df_X_train.csv')
+y_train_file_path = os.path.join(dirname, 'data_df_y_train.csv')
+X_test_file_path = os.path.join(dirname, 'data_df_X_test.csv')
+y_test_file_path = os.path.join(dirname, 'data_df_y_test.csv')
 
 X_train = genfromtxt(X_train_file_path, delimiter=',')
 y_train = pd.read_csv(y_train_file_path, delimiter=',', header=None)
@@ -87,6 +91,13 @@ def validate(training_results):
              'Labels': y_test_labels}
 
     mode = 'Validation'
+    return xDNN(data, mode)
+
+
+def classify(training_results, features):
+    data = {'xDNNParms': training_results['xDNNParms'], 'Features': features}
+
+    mode = 'Classify'
     return xDNN(data, mode)
 
 
