@@ -8,7 +8,7 @@ from myutils import pre_process_text
 #doc2vec parameters
 vector_size = 300
 window_size = 5
-min_count = 20
+min_count = 50
 sampling_threshold = 1e-6
 negative_size = 5
 train_epoch = 10
