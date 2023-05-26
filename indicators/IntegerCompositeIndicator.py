@@ -14,13 +14,13 @@ class IntegerCompositeIndicator(CompositeIndicator):
         return self._input_data
 
     def input_signature(self) -> dict:
-        return {"A": int, "B": int}
+        return {"A": 0, "B": 0}
 
     def run_algorithm(self, data: dict):
         self.input_data().clear()
 
         print(f"LIMEyo:\n{data}")
-        broadcast('data_sent', {"hip_string": "Yo yo yo"})
+        broadcast('data_sent', {"hip_string": "hello world"})
 
     def on_event_happened(self, data_event: DataEvent):
         super().on_event_happened(data_event.value())

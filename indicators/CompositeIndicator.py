@@ -1,3 +1,4 @@
+import traceback
 from abc import ABC, abstractmethod
 
 import EventsBroadcaster
@@ -29,7 +30,11 @@ class CompositeIndicator(ABC):
             for key in data.keys():
                 if key in self.input_signature().keys():
                     value = data[key]
-                    self.input_data().update({key: value})
+
+                    if type(self.input_signature()[key]) == type(data[key]):
+                        self.input_data().update({key: value})
+                    else:
+                        raise Exception(f'Event raised for {key} has data type: {type(data[key])}, instead of: {type(self.input_signature()[key])}')
 
             input_signature = self.input_signature()
             if input_signature.keys() == self.input_data().keys():

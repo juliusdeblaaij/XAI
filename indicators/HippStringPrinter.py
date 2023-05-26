@@ -16,7 +16,7 @@ class HippStringPrinter(CompositeIndicator, ABC):
         return self._input_data
 
     def input_signature(self) -> dict:
-        return {"hip_string": str}
+        return {"hip_string": ""}
 
     def run_algorithm(self, data: dict):
         self.input_data().clear()
