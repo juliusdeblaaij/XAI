@@ -1,5 +1,6 @@
 from DataEvent import DataEvent
 from EventsBroadcaster import subscribe, broadcast
+from algorithms.AdditionAlgorithm import AdditionAlgorithm
 from indicators.CompositeIndicator import CompositeIndicator
 
 class IntegerCompositeIndicator(CompositeIndicator):
@@ -18,9 +19,8 @@ class IntegerCompositeIndicator(CompositeIndicator):
 
     def run_algorithm(self, data: dict):
         self.input_data().clear()
-
-        print(f"LIMEyo:\n{data}")
-        broadcast('data_sent', {"hip_string": "hello world"})
+        addition = AdditionAlgorithm()
+        addition.run(**data)
 
     def on_event_happened(self, data_event: DataEvent):
         super().on_event_happened(data_event.value())

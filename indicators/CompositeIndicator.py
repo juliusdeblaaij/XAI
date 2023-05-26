@@ -22,7 +22,6 @@ class CompositeIndicator(ABC):
     def input_data(self) -> dict:
         pass
 
-    @abstractmethod
     def on_event_happened(self, data: dict):
         if type(data) != dict:
             return
