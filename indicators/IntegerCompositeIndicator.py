@@ -1,13 +1,12 @@
 from DataEvent import DataEvent
-from EventsBroadcaster import subscribe, broadcast
+from EventsBroadcaster import subscribe, broadcast, subscribe_to_data
 from algorithms.AdditionAlgorithm import AdditionAlgorithm
 from indicators.CompositeIndicator import CompositeIndicator
 
 class IntegerCompositeIndicator(CompositeIndicator):
 
     def __init__(self):
-        subscribe('data_sent', self.on_event_happened)
-        pass
+        super().__init__()
 
     _input_data = {}
 

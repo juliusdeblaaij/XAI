@@ -1,16 +1,13 @@
-import traceback
 from abc import ABC, abstractmethod
 
-import EventsBroadcaster
-from DataEvent import DataEvent
-from EventsBroadcaster import subscribe, broadcast
+from EventsBroadcaster import subscribe_to_data
 
 
 class CompositeIndicator(ABC):
 
     @abstractmethod
     def __init__(self):
-        pass
+        subscribe_to_data(self.on_event_happened)
 
     @property
     @abstractmethod

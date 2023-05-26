@@ -1,6 +1,6 @@
 import asyncio
 from algorithms.AlgorithmAdapter import AlgorithmAdapter
-from EventsBroadcaster import broadcast
+from EventsBroadcaster import broadcast, broadcast_data
 
 
 class AdditionAlgorithm(AlgorithmAdapter):
@@ -15,6 +15,6 @@ class AdditionAlgorithm(AlgorithmAdapter):
 
     def on_output_received(self, output):
         if type(output) == int:
-            broadcast('data_sent', {'addition': output})
+            broadcast_data({'addition': output})
         else:
             return

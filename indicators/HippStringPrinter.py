@@ -1,14 +1,13 @@
 from abc import ABC
 
 from DataEvent import DataEvent
-from EventsBroadcaster import subscribe
+from EventsBroadcaster import subscribe_to_data
 from indicators.CompositeIndicator import CompositeIndicator
 
 
 class HippStringPrinter(CompositeIndicator):
     def __init__(self):
-        subscribe('data_sent', self.on_event_happened)
-        pass
+        super().__init__()
 
     _input_data = {}
 

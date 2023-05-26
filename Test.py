@@ -1,4 +1,4 @@
-from EventsBroadcaster import broadcast, subscribe
+from EventsBroadcaster import broadcast_data, broadcast, subscribe
 from indicators.HippStringPrinter import HippStringPrinter
 from indicators.IntegerCompositeIndicator import IntegerCompositeIndicator
 
@@ -12,7 +12,7 @@ def print_addition_result(data):
 subscribe('data_sent', print_addition_result)
 
 print('Sending A')
-broadcast('data_sent', {"A": 1})
+broadcast_data({"A": 1})
 print("Sending B")
-broadcast('data_sent', {"B": 3})
-broadcast('data_sent', {"hip_string": "Cool"})
+broadcast_data({"B": 3})
+broadcast_data({"hip_string": "Cool"})
