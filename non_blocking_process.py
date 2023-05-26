@@ -2,31 +2,28 @@ from multiprocessing import Process, Queue, current_process
 from threading import Thread
 from time import sleep
 
-class NonBlockingProcessor():
+class NonBlockingProcess():
 
-    process = None
-    thread = None
 
-    def __init__(self, data, callback):
-        callback_queue = Queue()
-
-        p = Process(target=self.main_process, args=(data, callback_queue, self.callback_thread))
+    def __init__(self, data, callback_queue: Queue, callback):
+        p = Process(target=self.main_process, args=(data, callback_queue, self.callback_thread, callback))
         p.start()
 
         t = Thread(target=self.callback_caller, args=(callback_queue, ))
         t.start()
 
-    def main_process(self, data, callback_queue, cb):
+    def main_process(self, data, callback_queue, callback_thread, callback):
 
         work = self.do_work(data)
-        callback_queue.put((cb, work))
+        callback_queue.put((callback_thread, work, callback))
 
     def do_work(self, data):
         sleep(1)
         return data
 
-    def callback_thread(self, data):
-        print(f"data from cb_thread in process [{current_process().pid}]: {data}")
+    def callback_thread(self, data, callback):
+        callback(data)
+
 
 
 
