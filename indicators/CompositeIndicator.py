@@ -20,24 +20,30 @@ class CompositeIndicator(ABC):
         pass
 
     def on_event_happened(self, data: dict):
-        if type(data) != dict:
+        if not isinstance(data, dict):
             return
         else:
+            input_signature = self.input_signature()
+            input_data = self.input_data()
+
             for key in data.keys():
-                if key in self.input_signature().keys():
+                if key in input_signature.keys():
                     value = data[key]
 
-                    if type(self.input_signature()[key]) == type(data[key]):
-                        self.input_data().update({key: value})
+                    if isinstance(value, type(input_signature[key])):
+                        input_data[key] = value
                     else:
-                        raise Exception(f'Event raised for {key} has data type: {type(data[key])}, instead of: {type(self.input_signature()[key])}')
+                        raise Exception(
+                            f'Event raised for {key} has data type: {type(value)}, instead of: {type(input_signature[key])}')
 
-            input_signature = self.input_signature()
-            if input_signature.keys() == self.input_data().keys():
-                input_data = self.input_data().copy()
-                self.run_algorithm(input_data)
+            if set(input_signature.keys()) == set(input_data.keys()):
+                self.run_algorithm(**input_data)
         pass
 
     @abstractmethod
     def run_algorithm(self, data: dict):
+        pass
+
+    @abstractmethod
+    def on_algorithm_finished(self, data: dict):
         pass
