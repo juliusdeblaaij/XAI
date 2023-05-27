@@ -19,6 +19,11 @@ class CompositeIndicator(ABC):
     def input_data(self) -> dict:
         pass
 
+    @property
+    @abstractmethod
+    def local_data(self) -> dict:
+        pass
+
     def on_event_happened(self, data: dict):
         if not isinstance(data, dict):
             return
@@ -42,8 +47,4 @@ class CompositeIndicator(ABC):
 
     @abstractmethod
     def run_algorithm(self, data: dict):
-        pass
-
-    @abstractmethod
-    def on_algorithm_finished(self, data: dict):
         pass

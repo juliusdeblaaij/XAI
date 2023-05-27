@@ -91,14 +91,18 @@ class RunxDNN:
             self.training_results = xDNN(data, mode)
         return self.training_results
 
-    def validate(training_results):
+    def validate(self):
+        training_results = self.train()
+
         data = {'xDNNParms': training_results['xDNNParms'], 'Images': y_test_images, 'Features': X_test,
                 'Labels': y_test_labels}
 
         mode = 'Validation'
         return xDNN(data, mode)
 
-    def classify(training_results, features):
+    def classify(self, features):
+        training_results = self.train()
+
         data = {'xDNNParms': training_results['xDNNParms'], 'Features': features}
 
         mode = 'Classify'

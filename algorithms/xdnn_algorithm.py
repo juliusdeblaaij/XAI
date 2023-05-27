@@ -9,16 +9,19 @@ from myutils import *
 class xDNNAlgorithm(AbstractNonBlockingProcess):
 
     def _do_work(self, cases=None, mode=None):
-        if cases:
-            print(cases)
-        else:
-            return None
-        if mode:
-            print(mode)
-        else:
-            return None
+        if mode == None:
+            raise ValueError('Tried to run xDNN without specifying a mode (Learning, Validation or Classify).')
 
         xDNN = RunxDNN()
-        training_results = xDNN.train()
 
-        return training_results
+        if mode == "Classify":
+            if cases is None or cases == []:
+                raise ValueError('Tried to run xDNN classification without providing cases.')
+            classification_results = xDNN.classify(cases)
+
+            cleaned_dict = {
+                "EstLabs": np.concatenate(classification_results["EstLabs"]).ravel().astype(int),
+                "Scores": classification_results["Scores"]
+            }
+
+            return cleaned_dict
