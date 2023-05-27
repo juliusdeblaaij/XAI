@@ -19,10 +19,7 @@ if __name__ == "__main__":
     broadcast_data({"mode": "Learning", "cases": [
         "as a performance tester id like to investigate why theres high cpu startup time for both admin and container "
         "servers perhaps profiling would assist isolating the bottlenecks scope identify the bottlenecks document "
-        "reasons list proscons",
-    ]})
-    # FaithfulnessAlgorithm(class_names=["class1", "class2"], probabilities=[0.1, 0.23], callback_queue=callback_queue, callback=some_func)
-
-    for i in range(5):
-        print("Main thread stuff")
-        sleep(1)
+        "reasons list proscons"],
+        "predicted_classes": [5],
+        "actual_classes": [5]
+    })

@@ -135,7 +135,9 @@ def DecisionMaking(Params, datates):
         Value = np.zeros((CurrentNC, 1))
         for k in range(0, CurrentNC):
             kwargs = {"p":6}
-            distance = np.sort(cdist(data.reshape(1, -1), PARAM[k]['Centre'], 'minkowski', **kwargs))[0]
+            xa = data.reshape(1, -1)
+            xb = PARAM[k]['Centre']
+            distance = np.sort(cdist(XA=xa, XB=xb, metric='minkowski', **kwargs))[0]
             # distance=np.sort(cdist(data.reshape(1, -1),PARAM[k]['Centre'],'euclidean'))[0]
             Value[k] = distance[0]
         Value = softmax(-1 * Value ** 2).T

@@ -3,13 +3,12 @@ import numpy as np
 from DataEvent import DataEvent
 from algorithms.faithfulness_algorithm_adapter import FaithfulnessAlgorithmAdapter
 from algorithms.xdnn_algorithm_adapter import xDNNAlgorithmAdapter
-from doc2vec import doc2vec
+from d2v import doc2vec
 from indicators.CompositeIndicator import CompositeIndicator
 from myutils import pre_process_text
 
 
 class FaithfulnessIndicator(CompositeIndicator):
-
 
     def __init__(self):
         super().__init__()
@@ -25,45 +24,64 @@ class FaithfulnessIndicator(CompositeIndicator):
         return self._local_data
 
     def input_signature(self) -> dict:
-        return {"cases": []}
+        return {"cases": [], "predicted_classes": [], "actual_classes": []}
 
     def run_algorithm(self, **kwargs):
         self.input_data().clear()
 
-        xdnn_algo = xDNNAlgorithmAdapter()
-        kwargs["mode"] = "Classify"
-
-        cleaned_embeddings = []
-        cleaned_cases =[]
+        cleaned_cases = []
 
         for case in kwargs["cases"]:
             cleaned_text = pre_process_text(case)
             cleaned_cases.append(cleaned_text)
 
-            case_embedding = doc2vec(cleaned_text, 'd2v_23k_dbow.model')
-            case_embedding = np.array(case_embedding)
-            cleaned_embeddings.append(case_embedding)
-
-        self.local_data()["cleaned_cases"] = cleaned_cases
-
-        kwargs["cases"] = np.array(cleaned_embeddings)
-
-        xdnn_algo.run(callback=self.on_xDNN_classified, **kwargs)
-
-
-    def on_xDNN_classified(self, data):
-        print(data)
-        cleaned_cases = self.local_data().get("cleaned_cases")
-
         faithfulness_algo = FaithfulnessAlgorithmAdapter()
+        actual_classes = kwargs.get("actual_classes")
+        predicted_classes = kwargs.get("predicted_classes")
 
         kwargs = {
-            "text_instance": cleaned_cases[0],
+            "cases": cleaned_cases,
             "class_names": ["Not a user story", "1 SP", "2 SP", "3 SP", "5 SP", "8 SP"],
-            "probabilities": data["Scores"][0]
+            "classifier_fn": self.classifier_fn,
+            "predicted_classes": predicted_classes,
+            "actual_classes": actual_classes,
         }
 
         faithfulness_algo.run(callback=self.on_faithfulness_calculated, **kwargs)
+
+    def classifier_fn(self, data):
+        results = self.xdnn_classifier(data)
+        return results
+    def xdnn_classifier(self, data=None, **kwargs):
+
+        if data is not None:
+            if type(data) == type([]):
+
+                xdnn_algo = xDNNAlgorithmAdapter()
+                kwargs["mode"] = "Classify"
+
+                case_embeddings = []
+
+                for i, string in enumerate(data):
+                    cleaned_text = pre_process_text(string)
+
+                    case_embedding = doc2vec(cleaned_text, 'd2v_23k_dbow.model')
+                    case_embedding = np.array(case_embedding)
+                    case_embeddings.append(case_embedding)
+                    print(f'Embedded string {i} out of {len(data)}.')
+
+                kwargs["cases"] = np.array(case_embeddings)
+
+                xdnn_algo.run(callback=self.xdnn_callback, **kwargs)
+
+                while self.local_data().get("results") is None:
+                    pass
+
+                scores = self.local_data().get("results").get("Scores")
+                return scores
+
+    def xdnn_callback(self, results):
+        self.local_data()["results"] = results
 
     def on_faithfulness_calculated(self, data):
         print(f'Faithfulness: {data}')

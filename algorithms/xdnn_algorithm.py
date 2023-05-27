@@ -2,7 +2,7 @@ from non_blocking_process import AbstractNonBlockingProcess
 import numpy as np
 
 from run_xdnn import RunxDNN
-from doc2vec import doc2vec
+from d2v import doc2vec
 from myutils import *
 
 

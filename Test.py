@@ -12,6 +12,6 @@ faithfulness_indicator = FaithfulnessIndicator()
 if __name__ == "__main__":
     freeze_support()
 
-    broadcast_data({"cases": ["as a performance tester id like to investigate why theres high cpu startup time for both "
+    """broadcast_data({"cases": ["as a performance tester id like to investigate why theres high cpu startup time for both "
                              "admin and container servers perhaps profiling would assist isolating the bottlenecks scope"
-                             " identify the bottlenecks document reasons list proscons"], "mode": "Learning"})
+                             " identify the bottlenecks document reasons list proscons"], "mode": "Learning"})"""
