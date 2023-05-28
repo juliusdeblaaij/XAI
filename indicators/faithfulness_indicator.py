@@ -24,7 +24,7 @@ class FaithfulnessIndicator(CompositeIndicator):
         return self._local_data
 
     def input_signature(self) -> dict:
-        return {"cases": [], "predicted_classes": [], "actual_classes": []}
+        return {"cases": [], "predicted_classes": [], "xDNNParms": {}}
 
     def run_algorithm(self, **kwargs):
         self.input_data().clear()
@@ -36,15 +36,18 @@ class FaithfulnessIndicator(CompositeIndicator):
             cleaned_cases.append(cleaned_text)
 
         faithfulness_algo = FaithfulnessAlgorithmAdapter()
-        actual_classes = kwargs.get("actual_classes")
+
         predicted_classes = kwargs.get("predicted_classes")
+
+        xdnn_training_results = kwargs.get("xDNNParms")
+        xdnn_prototype_descriptions = xdnn_training_results.get("Parameters").get("Prototype")
 
         kwargs = {
             "cases": cleaned_cases,
             "class_names": ["Not a user story", "1 SP", "2 SP", "3 SP", "5 SP", "8 SP"],
             "classifier_fn": self.classifier_fn,
             "predicted_classes": predicted_classes,
-            "actual_classes": actual_classes,
+            "xdnn_prototype_descriptions": xdnn_prototype_descriptions,
         }
 
         faithfulness_algo.run(callback=self.on_faithfulness_calculated, **kwargs)
