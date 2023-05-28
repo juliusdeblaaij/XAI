@@ -6,7 +6,7 @@ from lime.lime_text import LimeTextExplainer
 
 class FaithfulnessAlgorithm(AbstractNonBlockingProcess):
 
-    def _do_work(self, cases=None, class_names=None, classifier_fn=None, predicted_classes=None, xdnn_prototype_descriptions=None):
+    def _do_work(self, cases=None, class_names=None, classifier_fn=None, predicted_classes=None, xdnn_training_results=None, xdnn_classification_results=None):
         if cases is None:
             raise ValueError("Attempted to get faithfulness score without supplying 'cases'.")
         if class_names is None:
@@ -15,8 +15,25 @@ class FaithfulnessAlgorithm(AbstractNonBlockingProcess):
             raise ValueError("Attempted to get faithfulness score without specifying 'classifier_fn'.")
         if predicted_classes is None:
             raise ValueError("Attempted to get faithfulness score without specifying 'predicted_classes'.")
-        if xdnn_prototype_descriptions is None:
-            raise ValueError("Attempted to get faithfulness score without specifying 'xdnn_prototype_descriptions'.")
+        if xdnn_training_results is None:
+            raise ValueError("Attempted to get faithfulness score without specifying 'xdnn_training_results'.")
+        if xdnn_classification_results is None:
+            raise ValueError("Attempted to get faithfulness score without specifying 'xdnn_classification_results'.")
+
+        predicted_classes = predicted_classes.flatten().astype(int)
+
+        for i, case in enumerate(cases):
+            predicted_class = predicted_classes[i]
+
+            closest_class_indices = xdnn_classification_results.get("ClosestClassIndices")
+            most_similar_prototype_index = closest_class_indices[i][predicted_class] + 1
+            training_parameters = xdnn_training_results.get("xDNNParms").get("Parameters")
+            prototypes = training_parameters[predicted_class].get("Prototype")
+            most_similar_prototype = prototypes[most_similar_prototype_index]
+
+            print(f"Most similar prototype to:\n{case},\nis: {predicted_class} #{most_similar_prototype_index} {most_similar_prototype}")
+
+
 
         explainer = LimeTextExplainer(class_names=class_names)
 

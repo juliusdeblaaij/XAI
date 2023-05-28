@@ -23,7 +23,7 @@ class Embedder(CompositeIndicator):
         return self._local_data
 
     def input_signature(self) -> dict:
-        return {"vectorizer_file_path": "", "cases": []}
+        return {"vectorizer_file_path": "", "embeddings_file_path": "", "cases": []}
 
     def run_algorithm(self, **kwargs):
         self.input_data().clear()
@@ -34,7 +34,11 @@ class Embedder(CompositeIndicator):
         vectorizer_algo.run(callback=self.on_cases_embedded, **kwargs)
 
     def on_cases_embedded(self, data):
+
+        data = list(data)
+
         broadcast_data({"features": data})
+
 
     def on_event_happened(self, data_event: DataEvent):
         super().on_event_happened(data_event.value())

@@ -15,15 +15,21 @@ class xDNNAlgorithm(AbstractNonBlockingProcess):
         xDNN = RunxDNN()
 
         if mode == "Learning":
+            if cases is None:
+                raise ValueError('Tried to run xDNN classification without providing cases.')
+            if features is None:
+                raise ValueError('Tried to run xDNN classification without providing features.')
+            if labels is None:
+                raise ValueError('Tried to run xDNN classification without providing labels.')
 
             training_results = xDNN.train(cases=cases, features=features, labels=labels)
 
             return training_results
 
         if mode == "Classify":
-            if training_results is None or cases == []:
+            if training_results is None:
                 raise ValueError("Tried to run xDNN classification without providing 'training_results'.")
-            if cases is None or cases == []:
+            if cases is None:
                 raise ValueError('Tried to run xDNN classification without providing cases.')
             classification_results = xDNN.classify(training_results=training_results, features=features)
 

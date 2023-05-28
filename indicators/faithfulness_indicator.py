@@ -24,30 +24,32 @@ class FaithfulnessIndicator(CompositeIndicator):
         return self._local_data
 
     def input_signature(self) -> dict:
-        return {"cases": [], "predicted_classes": [], "xDNNParms": {}}
+        return {"testing_cases": [], "training_results": {}, "classification_results": {}}
 
     def run_algorithm(self, **kwargs):
         self.input_data().clear()
 
         cleaned_cases = []
 
-        for case in kwargs["cases"]:
+        for case in kwargs["testing_cases"]:
             cleaned_text = pre_process_text(case)
             cleaned_cases.append(cleaned_text)
 
         faithfulness_algo = FaithfulnessAlgorithmAdapter()
 
-        predicted_classes = kwargs.get("predicted_classes")
+        xdnn_training_results = kwargs.get("training_results")
+        xdnn_classification_results = kwargs.get("classification_results")
 
-        xdnn_training_results = kwargs.get("xDNNParms")
-        xdnn_prototype_descriptions = xdnn_training_results.get("Parameters").get("Prototype")
+        predicted_classes = xdnn_classification_results.get("EstLabs")
+
 
         kwargs = {
             "cases": cleaned_cases,
             "class_names": ["Not a user story", "1 SP", "2 SP", "3 SP", "5 SP", "8 SP"],
             "classifier_fn": self.classifier_fn,
             "predicted_classes": predicted_classes,
-            "xdnn_prototype_descriptions": xdnn_prototype_descriptions,
+            "xdnn_training_results": xdnn_training_results,
+            "xdnn_classification_results": xdnn_classification_results,
         }
 
         faithfulness_algo.run(callback=self.on_faithfulness_calculated, **kwargs)

@@ -22,15 +22,18 @@ class xDNNTrainer(CompositeIndicator):
         return self._local_data
 
     def input_signature(self) -> dict:
-        return {"features": []}
+        return {"training_features": [], "training_cases": [], "training_labels": []}
 
     def run_algorithm(self, **kwargs):
         self.input_data().clear()
 
-        kwargs = {"mode": "Learning"}
-        kwargs["features"] = np.array(kwargs.get("features"))
+        features = np.array(kwargs.get("training_features"))
+        cases = np.array(kwargs.get("training_cases"))
+        labels = np.array(kwargs.get("training_labels"))
 
-        # TODO: features is empty when run_algorithm is called!
+        kwargs = {"mode": "Learning", "features": features, "cases": cases, "labels": labels}
+
+        # TODO: kijk in xdnn sample code om te zien welk datatype de labels en images hebben
         xdnn_algo = xDNNAlgorithmAdapter()
         xdnn_algo.run(callback=self.on_xdnn_trained, **kwargs)
     

@@ -47,9 +47,11 @@ def xDNN(Input, Mode):
         Test_Results = DecisionMaking(Params, datates)
         EstimatedLabels = Test_Results['EstimatedLabels']
         Scores = Test_Results['Scores']
+        ClosestClassIndices = Test_Results['ClosestClassIndices']
         Output = {}
         Output['EstLabs'] = EstimatedLabels
         Output['Scores'] = Scores
+        Output['ClosestClassIndices'] = ClosestClassIndices
         return Output
 
 
@@ -108,7 +110,7 @@ def xDNNclassifier(Data, Image):
             Centre[position,] = Centre[position,] * (Support[position] / Support[position] + 1) + data[i - 1] / (
                         Support[position] + 1)
             Support[position] = Support[position] + 1
-            Radius[position] = 0.5 * Radius[position] + 0.5 * (X[position,] - sum(Centre[position,] ** 2)) / 2
+            Radius[position] = 0.5 * Radius[position] + 0.5 * (X - sum(Centre[position,] ** 2)) / 2
     dic = {}
     dic['Noc'] = Noc
     dic['Centre'] = Centre
@@ -129,17 +131,25 @@ def DecisionMaking(Params, datates):
     LTes = np.shape(datates)[0]
     EstimatedLabels = np.zeros((LTes))
     Scores = np.zeros((LTes, CurrentNC))
+    ClosestClassIndices = []
     for i in range(1, LTes + 1):
         data = datates[i - 1,]
         R = np.zeros((VV, CurrentNC))
         Value = np.zeros((CurrentNC, 1))
+
+        closest_class_indices = []
         for k in range(0, CurrentNC):
             kwargs = {"p":6}
             xa = data.reshape(1, -1)
             xb = PARAM[k]['Centre']
-            distance = np.sort(cdist(XA=xa, XB=xb, metric='minkowski', **kwargs))[0]
-            # distance=np.sort(cdist(data.reshape(1, -1),PARAM[k]['Centre'],'euclidean'))[0]
+            distances = cdist(XA=xa, XB=xb, metric='minkowski', **kwargs)
+            distance = np.sort(distances)[0]
             Value[k] = distance[0]
+            index_of_closest_class = np.argmin(distances)
+            closest_class_indices.append(index_of_closest_class)
+
+        ClosestClassIndices.append(closest_class_indices)
+
         Value = softmax(-1 * Value ** 2).T
         Scores[i - 1,] = Value
         Value = Value[0]
@@ -156,6 +166,7 @@ def DecisionMaking(Params, datates):
     dic = {}
     dic['EstimatedLabels'] = EstimatedLabels
     dic['Scores'] = Scores
+    dic["ClosestClassIndices"] = ClosestClassIndices
     return dic
 
 ###############################################################################
