@@ -58,8 +58,8 @@ class ExplanationsGenerator(CompositeIndicator):
             sorted_similarities = [item[1] for item in sorted_cases_with_similarities]
 
             explanation = \
-f"""User story is {case}.
-IF (User story is similar to "{sorted_cases[0]}") OR
+'User story is "{case}".' + \
+f"""\nIF (User story is similar to "{sorted_cases[0]}") OR
 IF (User story is similar to "{sorted_cases[1]}") OR
 IF (User story is similar to "{sorted_cases[2]}")
 Then '{predicted_label}'"""

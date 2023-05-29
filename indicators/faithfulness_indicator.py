@@ -2,6 +2,7 @@ import joblib
 import numpy as np
 
 from DataEvent import DataEvent
+from EventsBroadcaster import broadcast_data
 from algorithms.faithfulness_algorithm_adapter import FaithfulnessAlgorithmAdapter
 from algorithms.tfidf_vectorizer_algorithm_adapter import TfidfVectorizerAlgorithmAdapter
 from algorithms.xdnn_algorithm_adapter import xDNNAlgorithmAdapter
@@ -79,7 +80,7 @@ class FaithfulnessIndicator(CompositeIndicator):
                     case_embedding = np.array(case_embedding.data)
                     case_embedding = pad_array(case_embedding)
                     case_embeddings.append(case_embedding)
-                    print(f'Embedded string {i} out of {len(data)}.')
+                    # print(f'Embedded string {i} out of {len(data)}.')
 
                 xdnn_algo = xDNNAlgorithmAdapter()
                 kwargs["mode"] = "Classify"
@@ -98,7 +99,9 @@ class FaithfulnessIndicator(CompositeIndicator):
         self.local_data()["results"] = results
 
     def on_faithfulness_calculated(self, data):
-        print(f'Faithfulness: {data}')
+        data_np = np.asarray(data)
+        print(f'Faithfulness len: {len(data_np)}, min: {np.min(data_np)}, max: {np.max(data)}')
+        broadcast_data({"faithfulness": data})
 
     def on_event_happened(self, data_event: DataEvent):
         super().on_event_happened(data_event.value())

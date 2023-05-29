@@ -2,7 +2,8 @@ import csv
 from os import path
 
 import joblib
-import numpy as np
+import nltk
+from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 from myutils import pad_array
@@ -18,7 +19,10 @@ class TfidfVectorizerAlgorithm(AbstractNonBlockingProcess):
             if corpus_file_path is None:
                 raise ValueError("Attempted to run TfidfVectorizer algortihm without specifying 'file'")
 
-            vectorizer = TfidfVectorizer(input='filename', lowercase=True, min_df=0.1)
+            stop_words = stopwords.words('english')
+            print(f"Embedder uses the following stopwords:\n{stop_words}")
+
+            vectorizer = TfidfVectorizer(input='filename', lowercase=True, min_df=0.1, stop_words=stop_words)
             vectorizer.fit([corpus_file_path])
 
             vectorizer_file_path = path.join(r"C:\Users\SKIKK\PycharmProjects\XAI", "vectorizer.pkl")
