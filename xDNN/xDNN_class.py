@@ -47,11 +47,11 @@ def xDNN(Input, Mode):
         Test_Results = DecisionMaking(Params, datates)
         EstimatedLabels = Test_Results['EstimatedLabels']
         Scores = Test_Results['Scores']
-        ClosestClassIndices = Test_Results['ClosestClassIndices']
+        Similarities = Test_Results['Similarities']
         Output = {}
         Output['EstLabs'] = EstimatedLabels
         Output['Scores'] = Scores
-        Output['ClosestClassIndices'] = ClosestClassIndices
+        Output['Similarities'] = Similarities
         return Output
 
 
@@ -131,24 +131,24 @@ def DecisionMaking(Params, datates):
     LTes = np.shape(datates)[0]
     EstimatedLabels = np.zeros((LTes))
     Scores = np.zeros((LTes, CurrentNC))
-    ClosestClassIndices = []
+    Similarities = []
     for i in range(1, LTes + 1):
         data = datates[i - 1,]
         R = np.zeros((VV, CurrentNC))
         Value = np.zeros((CurrentNC, 1))
 
-        closest_class_indices = []
+        in_class_similarities = []
         for k in range(0, CurrentNC):
             kwargs = {"p":6}
             xa = data.reshape(1, -1)
             xb = PARAM[k]['Centre']
             distances = cdist(XA=xa, XB=xb, metric='minkowski', **kwargs)
-            distance = np.sort(distances)[0]
+            sorted_distances = np.sort(distances)
+            distance = sorted_distances[0]
             Value[k] = distance[0]
-            index_of_closest_class = np.argmin(distances)
-            closest_class_indices.append(index_of_closest_class)
+            in_class_similarities.append(sorted_distances)
 
-        ClosestClassIndices.append(closest_class_indices)
+        Similarities.append(in_class_similarities)
 
         Value = softmax(-1 * Value ** 2).T
         Scores[i - 1,] = Value
@@ -166,7 +166,7 @@ def DecisionMaking(Params, datates):
     dic = {}
     dic['EstimatedLabels'] = EstimatedLabels
     dic['Scores'] = Scores
-    dic["ClosestClassIndices"] = ClosestClassIndices
+    dic["Similarities"] = Similarities
     return dic
 
 ###############################################################################

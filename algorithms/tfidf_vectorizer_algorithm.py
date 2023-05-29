@@ -2,6 +2,7 @@ import csv
 from os import path
 
 import joblib
+import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 from myutils import pad_array
@@ -51,10 +52,9 @@ class TfidfVectorizerAlgorithm(AbstractNonBlockingProcess):
             if not path.isfile(embeddings_file_path) or embeddings == []:
                 for i, case in enumerate(cases):
                     embedding = vectorizer.transform([case])
-                    embeddings.append(embedding.data)
+                    padded_embedding = pad_array(embedding.data)
+                    embeddings.append(padded_embedding)
                     print(f'Embedded {i}/{len(cases)} strings.')
-
-                embeddings = pad_array(embeddings)
 
                 with open(embeddings_file_path, 'w+', newline='\n') as csvfile:
                     embeddings_writer = csv.writer(csvfile, delimiter=',',

@@ -9,6 +9,7 @@ from algorithms.faithfulness_algorithm import FaithfulnessAlgorithm
 from indicators.corpus_training import CorpusTrainer
 from indicators.dataset_splitter import DatasetSplitter
 from indicators.embedder import Embedder
+from indicators.explanations_generator import ExplanationsGenerator
 from indicators.faithfulness_indicator import FaithfulnessIndicator
 from indicators.xdnn_classifier import xDNNClassifier
 from indicators.xdnn_trainer import xDNNTrainer
@@ -45,6 +46,7 @@ if __name__ == "__main__":
     faithfulness_indicator = FaithfulnessIndicator()
     embedder = Embedder()
     dataset_splitter = DatasetSplitter()
+    explanation_generator = ExplanationsGenerator()
 
     corpus_file_path = r'C:\Users\SKIKK\PycharmProjects\XAI\data\all_orgs_documents.csv'
     broadcast_data({"corpus_file_path": corpus_file_path,

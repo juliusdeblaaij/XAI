@@ -5,13 +5,16 @@ Please cite:
 Angelov, P., & Soares, E. (2020). Towards explainable deep neural networks (xDNN). Neural Networks.
 
 """
-
+import joblib
 import pandas as pd
 
 from xDNN.xDNN_class import *
 
 class RunxDNN:
     training_results = None
+
+    def load_training_results(self):
+        return joblib.load("training_results.pkl")
 
     def train(self, cases, features, labels):
 
@@ -20,6 +23,7 @@ class RunxDNN:
         mode = 'Learning'
 
         training_results = xDNN(data, mode)
+        joblib.dump(training_results, "training_results.pkl")
         return training_results
 
     def validate(self, training_results, test_features, test_cases):

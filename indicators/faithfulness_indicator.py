@@ -1,11 +1,13 @@
+import joblib
 import numpy as np
 
 from DataEvent import DataEvent
 from algorithms.faithfulness_algorithm_adapter import FaithfulnessAlgorithmAdapter
+from algorithms.tfidf_vectorizer_algorithm_adapter import TfidfVectorizerAlgorithmAdapter
 from algorithms.xdnn_algorithm_adapter import xDNNAlgorithmAdapter
 from d2v import doc2vec
 from indicators.CompositeIndicator import CompositeIndicator
-from myutils import pre_process_text
+from myutils import pre_process_text, pad_array
 
 
 class FaithfulnessIndicator(CompositeIndicator):
@@ -24,7 +26,7 @@ class FaithfulnessIndicator(CompositeIndicator):
         return self._local_data
 
     def input_signature(self) -> dict:
-        return {"testing_cases": [], "training_results": {}, "classification_results": {}}
+        return {"testing_cases": [], "training_results": {}, "classification_results": {}, "explanations": [], "vectorizer_file_path": ""}
 
     def run_algorithm(self, **kwargs):
         self.input_data().clear()
@@ -40,14 +42,15 @@ class FaithfulnessIndicator(CompositeIndicator):
         xdnn_training_results = kwargs.get("training_results")
         xdnn_classification_results = kwargs.get("classification_results")
 
-        predicted_classes = xdnn_classification_results.get("EstLabs")
-
+        predicted_labels = xdnn_classification_results.get("EstLabs")
+        explanations = kwargs.get("explanations")
 
         kwargs = {
             "cases": cleaned_cases,
             "class_names": ["Not a user story", "1 SP", "2 SP", "3 SP", "5 SP", "8 SP"],
             "classifier_fn": self.classifier_fn,
-            "predicted_classes": predicted_classes,
+            "predicted_labels": predicted_labels,
+            "explanations": explanations,
             "xdnn_training_results": xdnn_training_results,
             "xdnn_classification_results": xdnn_classification_results,
         }
@@ -62,20 +65,26 @@ class FaithfulnessIndicator(CompositeIndicator):
         if data is not None:
             if type(data) == type([]):
 
-                xdnn_algo = xDNNAlgorithmAdapter()
-                kwargs["mode"] = "Classify"
-
                 case_embeddings = []
+
+                vectorizer_file_path = r"C:\Users\SKIKK\PycharmProjects\XAI\vectorizer.pkl"
+
+                vectorizer = joblib.load(vectorizer_file_path)
+                vectorizer.input = 'content'
 
                 for i, string in enumerate(data):
                     cleaned_text = pre_process_text(string)
 
-                    case_embedding = doc2vec(cleaned_text, 'd2v_23k_dbow.model')
-                    case_embedding = np.array(case_embedding)
+                    case_embedding = vectorizer.transform([cleaned_text])
+                    case_embedding = np.array(case_embedding.data)
+                    case_embedding = pad_array(case_embedding)
                     case_embeddings.append(case_embedding)
                     print(f'Embedded string {i} out of {len(data)}.')
 
-                kwargs["cases"] = np.array(case_embeddings)
+                xdnn_algo = xDNNAlgorithmAdapter()
+                kwargs["mode"] = "Classify"
+
+                kwargs["features"] = np.asarray(case_embeddings)
 
                 xdnn_algo.run(callback=self.xdnn_callback, **kwargs)
 

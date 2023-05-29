@@ -27,10 +27,12 @@ class xDNNAlgorithm(AbstractNonBlockingProcess):
             return training_results
 
         if mode == "Classify":
+            training_results = xDNN.load_training_results()
+
             if training_results is None:
                 raise ValueError("Tried to run xDNN classification without providing 'training_results'.")
-            if cases is None:
-                raise ValueError('Tried to run xDNN classification without providing cases.')
+            if features is None:
+                raise ValueError('Tried to run xDNN classification without providing features.')
             classification_results = xDNN.classify(training_results=training_results, features=features)
 
             return classification_results
