@@ -33,7 +33,7 @@ class ExplanationAccuracyIndicator(CompositeIndicator):
         outsider_acceptability_scores = kwargs.get("outsider_acceptability_scores")
         practitioner_acceptability_scores = kwargs.get("practitioner_acceptability_scores")
         expert_acceptability_scores = kwargs.get("expert_acceptability_scores")
-        faithfulness_scores = kwargs.get("explanations")
+        faithfulness_scores = kwargs.get("faithfulness_scores")
 
         faithfulness_variable = FuzzyVariable(
             universe_range=(0, 1),
@@ -114,9 +114,10 @@ class ExplanationAccuracyIndicator(CompositeIndicator):
             defuzzification_operator="cog",
         )
 
+        explanation_accuracy_scores = []
         explanation_accuracy_decisions = []
 
-        for i, faithfulness_score in faithfulness_scores:
+        for i, faithfulness_score in enumerate(faithfulness_scores):
             practitioner_acceptability_score = practitioner_acceptability_scores[i]
 
             model(
@@ -126,15 +127,15 @@ class ExplanationAccuracyIndicator(CompositeIndicator):
                 practitioner_acceptability=practitioner_acceptability_score
             )
 
-            explanation_accuracy = model.defuzzificated_infered_memberships
-            if explanation_accuracy >= 5:
-                print("PASS")
+            explanation_accuracy_score = model.defuzzificated_infered_memberships.get("explanation_accuracy")
+            if explanation_accuracy_score >= 5:
                 explanation_accuracy_decisions.append(1)
             else:
-                print("FAIL")
                 explanation_accuracy_decisions.append(0)
 
-        broadcast_data({"explanation_accuracy_decisions": explanation_accuracy_decisions})
+            explanation_accuracy_scores.append(explanation_accuracy_score)
+
+        broadcast_data({"explanation_accuracy_decisions": explanation_accuracy_decisions, "explanation_accuracy_scores": explanation_accuracy_scores})
 
     def on_event_happened(self, data_event: DataEvent):
         super().on_event_happened(data_event.value())
