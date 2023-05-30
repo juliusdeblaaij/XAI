@@ -1,11 +1,8 @@
 import csv
-from multiprocessing import current_process, Queue
-from time import sleep
-
-from sklearn.model_selection import train_test_split
+from multiprocessing import current_process
 
 from EventsBroadcaster import broadcast_data
-from algorithms.faithfulness_algorithm import FaithfulnessAlgorithm
+from indicators.audience_aspects_extractor import AudienceAspectsExtractor
 from indicators.corpus_training import CorpusTrainer
 from indicators.dataset_splitter import DatasetSplitter
 from indicators.embedder import Embedder
@@ -14,8 +11,6 @@ from indicators.faithfulness_indicator import FaithfulnessIndicator
 from indicators.xdnn_classifier import xDNNClassifier
 from indicators.xdnn_trainer import xDNNTrainer
 from myutils import pre_process_text
-
-callback_queue = Queue()
 
 
 if __name__ == "__main__":
@@ -47,6 +42,7 @@ if __name__ == "__main__":
     embedder = Embedder()
     dataset_splitter = DatasetSplitter()
     explanation_generator = ExplanationsGenerator()
+    audience_knowledge_graphs_extractor = AudienceAspectsExtractor()
 
     corpus_file_path = r'C:\Users\SKIKK\PycharmProjects\XAI\data\all_orgs_documents.csv'
     broadcast_data({"corpus_file_path": corpus_file_path,
@@ -56,3 +52,26 @@ if __name__ == "__main__":
         "labels": labels,
         "cases": cleaned_cases
     })
+
+    outsider_questions = """What is a user story?
+    What is an example of a user story?
+    What was the prediction for this user story?"""
+
+    practicioner_questions = """What is a user story?
+    What is an example of a user story?
+    What was the prediction for this user story?
+    What features of the user story contributed to the story points prediction?
+    How can a user story be refused?
+    Which specific process was used to automatcally determine the amount of story points for a user story?"""
+
+    expert_questions = """What is a user story?
+    What is an example of a user story?
+    What was the prediction for this user story?
+    What features of the user story contributed to the story points prediction?
+    How can a user story be refused?
+    Which specific process was used to automatcally determine the amount of story points for a user story?
+    What are known issues of the technology used to automatically determine the amount of story points for a user story?"""
+
+    broadcast_data({"outsider_questions": outsider_questions,
+                    "practicioner_questions": practicioner_questions,
+                    "expert_questions": expert_questions})

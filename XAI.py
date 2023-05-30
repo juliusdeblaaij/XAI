@@ -135,10 +135,7 @@ else:
     }
 
 
-def get_explicandum_graph(explicandum_path):
-
-    explicandum_path_split = list(explicandum_path.split('/'))
-    explicandum_name = explicandum_path_split[len(explicandum_path_split) - 1]
+def get_explicandum_graph(text: str, explicandum_name: str):
 
     explicandum_graph_cache = os.path.join(cache_path,
                                            f"cache_explicandum_graph_{explicandum_name}.pkl")
@@ -146,28 +143,22 @@ def get_explicandum_graph(explicandum_path):
 
     explicandum_graph = load_or_create_cache(
         explicandum_graph_cache,
-        lambda: KnowledgeGraphExtractor(GRAPH_BUILDER_OPTIONS).set_documents_path(explicandum_path,
+        lambda: KnowledgeGraphExtractor(GRAPH_BUILDER_OPTIONS).set_content_list(content_list=[text],
                                                                                   remove_stopwords=True,
                                                                                   remove_numbers=True,
-                                                                                  avoid_jumps=True).build(
-            **GRAPH_EXTRACTION_OPTIONS)
-    )
-    save_graphml(explicandum_graph, os.path.join(cache_path, 'explicandum_graph'))
+                                                                                  avoid_jumps=True).build(**GRAPH_EXTRACTION_OPTIONS))
+
+    save_graphml(explicandum_graph, explicandum_graph_cache)
 
     return explicandum_graph
 
 
-def get_explainable_information_graph(explainable_information_path):
-    explainable_information_graph_cache = os.path.join(cache_path,
-                                                       f"cache_explainable_information_graph.pkl")
+def get_explainable_information_graph(text: str):
 
-    explainable_information_graph = load_or_create_cache(
-        explainable_information_graph_cache,
-        lambda: KnowledgeGraphExtractor(GRAPH_BUILDER_OPTIONS).set_documents_path(explainable_information_path,
-                                                                                  **GRAPH_CLEANING_OPTIONS).build(
-            **GRAPH_EXTRACTION_OPTIONS)
-    )
-    save_graphml(explainable_information_graph, os.path.join(cache_path, 'explainable_information_graph'))
+    explainable_information_graph = KnowledgeGraphExtractor(GRAPH_BUILDER_OPTIONS).set_content_list(content_list=[text],
+                                                                                   **GRAPH_CLEANING_OPTIONS).build(
+                                                                                   **GRAPH_EXTRACTION_OPTIONS)
+
     return explainable_information_graph
 
 
@@ -186,18 +177,45 @@ def get_keys_with_highest_value(dictionary):
     return highest_value_keys
 
 
+PHI = """This User Story is worth 5 Story Points as it was similar to:
+- User Story #ID456, which was worth 5 story points.
+- User Story #ID443, which was was worth 5 story points.
+- User Story #ID003, which was worth 8 story points.
+- User Story #ID003, which was worth 3 story points.
+And this User Story was most similar to #ID456."""
+
+outsider_questions = """What is a user story?
+What is an example of a user story?
+What was the prediction for this user story?"""
+
+practicioner_questions = """What is a user story?
+What is an example of a user story?
+What was the prediction for this user story?
+What features of the user story contributed to the story points prediction?
+How can a user story be refused?
+Which specific process was used to automatcally determine the amount of story points for a user story?"""
+
+expert_questions = """What is a user story?
+What is an example of a user story?
+What was the prediction for this user story?
+What features of the user story contributed to the story points prediction?
+How can a user story be refused?
+Which specific process was used to automatcally determine the amount of story points for a user story?
+What are known issues of the technology used to automatically determine the amount of story points for a user story?"""
+
+
 if __name__ == "__main__":
 
-    outsider_explicandum_graph = get_explicandum_graph("./data/explicanda/outsider")
+    outsider_explicandum_graph = get_explicandum_graph(outsider_questions, "outsider")
     outsider_aspects_amount = len(get_aspects(outsider_explicandum_graph))
 
-    practitioner_explicandum_graph = get_explicandum_graph("./data/explicanda/practitioner")
+    practitioner_explicandum_graph = get_explicandum_graph(practicioner_questions, "practicioner")
     practitioner_aspects_amount = len(get_aspects(practitioner_explicandum_graph))
 
-    experts_explicandum_graph = get_explicandum_graph("./data/explicanda/expert")
+    experts_explicandum_graph = get_explicandum_graph(expert_questions, "expert")
     experts_aspects_amount = len(get_aspects(experts_explicandum_graph))
 
-    explainable_information_graph = get_explainable_information_graph("./data/explainable_information")
+    explainable_information_graph = get_explainable_information_graph(PHI)
     explainable_information_aspects_amount = len(get_aspects(experts_explicandum_graph))
 
     aspects_variable = FuzzyVariable(
