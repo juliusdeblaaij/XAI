@@ -1,6 +1,7 @@
 import re
 import numpy as np
-
+from doxpy.models.knowledge_extraction.knowledge_graph_extractor import KnowledgeGraphExtractor
+import confuse
 
 def pre_process_text(text):
     # text = re.sub('[^a-zA-Z0-9 -]', '', str(text))
@@ -24,3 +25,17 @@ def pad_array(arr):
     padded_arr = np.pad(arr, (0, max_length - len(arr)), mode='constant', constant_values=0)
 
     return padded_arr
+
+config = confuse.Configuration('XAI', __name__)
+graph_builder_options = config["graph_builder_options"].get(dict)
+graph_cleaning_options = config["graph_cleaning_options"].get(dict)
+graph_extraction_options = config["graph_extraction_options"].get(dict)
+
+
+def extract_knowledge_graph(text: str):
+    knowledge_graph = KnowledgeGraphExtractor(graph_builder_options).set_content_list(
+        content_list=[text],
+        **graph_cleaning_options).build(
+        **graph_extraction_options)
+
+    return knowledge_graph

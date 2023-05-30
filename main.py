@@ -2,6 +2,7 @@ import csv
 from multiprocessing import current_process
 
 from EventsBroadcaster import broadcast_data
+from indicators.audience_acceptability_indicator import AudienceAcceptabilityIndicator
 from indicators.audience_aspects_extractor import AudienceAspectsExtractor
 from indicators.corpus_training import CorpusTrainer
 from indicators.dataset_splitter import DatasetSplitter
@@ -43,6 +44,7 @@ if __name__ == "__main__":
     dataset_splitter = DatasetSplitter()
     explanation_generator = ExplanationsGenerator()
     audience_knowledge_graphs_extractor = AudienceAspectsExtractor()
+    audience_acceptability_indicator = AudienceAcceptabilityIndicator()
 
     corpus_file_path = r'C:\Users\SKIKK\PycharmProjects\XAI\data\all_orgs_documents.csv'
     broadcast_data({"corpus_file_path": corpus_file_path,
