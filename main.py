@@ -59,7 +59,7 @@ if __name__ == "__main__":
     What is an example of a user story?
     What was the prediction for this user story?"""
 
-    practicioner_questions = """What is a user story?
+    practitioner_questions = """What is a user story?
     What is an example of a user story?
     What was the prediction for this user story?
     What features of the user story contributed to the story points prediction?
@@ -75,5 +75,5 @@ if __name__ == "__main__":
     What are known issues of the technology used to automatically determine the amount of story points for a user story?"""
 
     broadcast_data({"outsider_questions": outsider_questions,
-                    "practicioner_questions": practicioner_questions,
+                    "practitioner_questions": practitioner_questions,
                     "expert_questions": expert_questions})

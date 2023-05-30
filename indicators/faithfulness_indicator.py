@@ -101,7 +101,7 @@ class FaithfulnessIndicator(CompositeIndicator):
     def on_faithfulness_calculated(self, data):
         data_np = np.asarray(data)
         print(f'Faithfulness len: {len(data_np)}, min: {np.min(data_np)}, max: {np.max(data)}')
-        broadcast_data({"faithfulness": data})
+        broadcast_data({"faithfulness_scores": data})
 
     def on_event_happened(self, data_event: DataEvent):
         super().on_event_happened(data_event.value())

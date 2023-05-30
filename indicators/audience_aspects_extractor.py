@@ -23,28 +23,28 @@ class AudienceAspectsExtractor(CompositeIndicator):
         return self._local_data
 
     def input_signature(self) -> dict:
-        return {"outsider_questions": "", "practicioner_questions": "", "expert_questions": ""}
+        return {"outsider_questions": "", "practitioner_questions": "", "expert_questions": ""}
 
     def run_algorithm(self, **kwargs):
         self.input_data().clear()
 
         outsider_questions = kwargs.get("outsider_questions")
-        practicioner_questions = kwargs.get("practicioner_questions")
+        practitioner_questions = kwargs.get("practitioner_questions")
         expert_questions = kwargs.get("expert_questions")
 
         outsider_knowledge_graph = extract_knowledge_graph(text=outsider_questions)
 
         outsider_aspects = get_aspects(outsider_knowledge_graph)
 
-        practicioner_knowledge_graph = extract_knowledge_graph(text=practicioner_questions)
+        practitioner_knowledge_graph = extract_knowledge_graph(text=practitioner_questions)
 
-        practicioner_aspects = get_aspects(practicioner_knowledge_graph)
+        practitioner_aspects = get_aspects(practitioner_knowledge_graph)
 
         expert_knowledge_graph = extract_knowledge_graph(text=expert_questions)
 
         expert_aspects = get_aspects(expert_knowledge_graph)
 
-        broadcast_data({"outsider_aspects": outsider_aspects, "practicioner_aspects": practicioner_aspects, "expert_aspects": expert_aspects})
+        broadcast_data({"outsider_aspects": outsider_aspects, "practitioner_aspects": practitioner_aspects, "expert_aspects": expert_aspects})
 
     def on_event_happened(self, data_event: DataEvent):
         super().on_event_happened(data_event.value())

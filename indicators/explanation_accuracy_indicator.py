@@ -9,7 +9,7 @@ from myutils import *
 from get_aspects import get_aspects
 
 
-class AudienceAcceptabilityIndicator(CompositeIndicator):
+class ExplanationAccuracyIndicator(CompositeIndicator):
 
     def __init__(self):
         super().__init__()
@@ -25,25 +25,20 @@ class AudienceAcceptabilityIndicator(CompositeIndicator):
         return self._local_data
 
     def input_signature(self) -> dict:
-        return {"outsider_aspects": [], "practitioner_aspects": [], "expert_aspects": [], "explanations": []}
+        return {"outsider_acceptability_scores": [], "practitioner_acceptability_scores": [], "expert_acceptability_scores": [], "faithfulness_scores": []}
 
     def run_algorithm(self, **kwargs):
         self.input_data().clear()
 
-        outsider_aspects_amount = len(kwargs.get("outsider_aspects"))
-        practitioner_aspects_amount = len(kwargs.get("practitioner_aspects"))
-        experts_aspects_amount = len(kwargs.get("expert_aspects"))
-        explanations = kwargs.get("explanations")
+        outsider_acceptability_scores = kwargs.get("outsider_acceptability_scores")
+        practitioner_acceptability_scores = kwargs.get("practitioner_acceptability_scores")
+        expert_acceptability_scores = kwargs.get("expert_acceptability_scores")
+        faithfulness_scores = kwargs.get("explanations")
 
-        kwargs = {
-            "outsider_aspects_amount": outsider_aspects_amount,
-            "practitioner_aspects_amount": practitioner_aspects_amount,
-            "experts_aspects_amount": experts_aspects_amount,
-            "explanations": explanations
-        }
+        for i, faithfulness_score in faithfulness_scores:
+            practitioner_acceptability_score = practitioner_acceptability_scores[i]
 
-        audience_acceptability_algo = AudienceAcceptabilityAlgorithmAdapter()
-        audience_acceptability_algo.run(callback=self.on_audience_acceptability_calculated, **kwargs)
+
 
     def on_audience_acceptability_calculated(self, data):
         outsider_acceptability_scores = data.get("outsider_acceptability_scores")

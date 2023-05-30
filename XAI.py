@@ -188,7 +188,7 @@ outsider_questions = """What is a user story?
 What is an example of a user story?
 What was the prediction for this user story?"""
 
-practicioner_questions = """What is a user story?
+practitioner_questions = """What is a user story?
 What is an example of a user story?
 What was the prediction for this user story?
 What features of the user story contributed to the story points prediction?
@@ -209,7 +209,7 @@ if __name__ == "__main__":
     outsider_explicandum_graph = get_explicandum_graph(outsider_questions, "outsider")
     outsider_aspects_amount = len(get_aspects(outsider_explicandum_graph))
 
-    practitioner_explicandum_graph = get_explicandum_graph(practicioner_questions, "practicioner")
+    practitioner_explicandum_graph = get_explicandum_graph(practitioner_questions, "practitioner")
     practitioner_aspects_amount = len(get_aspects(practitioner_explicandum_graph))
 
     experts_explicandum_graph = get_explicandum_graph(expert_questions, "expert")
