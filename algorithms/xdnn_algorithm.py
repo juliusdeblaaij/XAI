@@ -1,9 +1,5 @@
 from non_blocking_process import AbstractNonBlockingProcess
-import numpy as np
-
 from run_xdnn import RunxDNN
-from d2v import doc2vec
-from myutils import *
 
 
 class xDNNAlgorithm(AbstractNonBlockingProcess):

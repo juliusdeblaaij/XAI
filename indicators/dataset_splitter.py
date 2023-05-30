@@ -28,7 +28,7 @@ class DatasetSplitter(CompositeIndicator):
 
         # TODO: splt features en labels o.b.v. user story vs. non-user story, doe dan train_test_split en combineer de resultaten.
         training_features, testing_features, training_labels, testing_labels, training_cases, testing_cases = \
-            train_test_split(kwargs["features"], kwargs["labels"], kwargs["cases"], test_size=0.2, random_state=42,
+            train_test_split(kwargs["features"], kwargs["labels"], kwargs["cases"], test_size=0.02, random_state=42,
                              shuffle=True)
 
         broadcast_data({"training_features": training_features})

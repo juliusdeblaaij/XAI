@@ -7,6 +7,7 @@ from indicators.audience_aspects_extractor import AudienceAspectsExtractor
 from indicators.corpus_training import CorpusTrainer
 from indicators.dataset_splitter import DatasetSplitter
 from indicators.embedder import Embedder
+from indicators.explanation_accuracy_indicator import ExplanationAccuracyIndicator
 from indicators.explanations_generator import ExplanationsGenerator
 from indicators.faithfulness_indicator import FaithfulnessIndicator
 from indicators.xdnn_classifier import xDNNClassifier
@@ -45,6 +46,7 @@ if __name__ == "__main__":
     explanation_generator = ExplanationsGenerator()
     audience_knowledge_graphs_extractor = AudienceAspectsExtractor()
     audience_acceptability_indicator = AudienceAcceptabilityIndicator()
+    explanation_accuracy_indicator = ExplanationAccuracyIndicator()
 
     corpus_file_path = r'C:\Users\SKIKK\PycharmProjects\XAI\data\all_orgs_documents.csv'
     broadcast_data({"corpus_file_path": corpus_file_path,

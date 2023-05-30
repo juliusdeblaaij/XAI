@@ -148,8 +148,9 @@ class AudienceAcceptabilityAlgorithm(AbstractNonBlockingProcess):
             practitioner_acceptability_scores.append(acceptability_scores.get("practitioner_acceptability"))
             expert_acceptability_scores.append(acceptability_scores.get("expert_acceptability"))
 
-            if 100 % i == 0:
-                print(f"Calculated acceptability scores {i} / {len(explanations)}")
+            if i > 0:
+                if 100 % i == 0:
+                    print(f"Calculated acceptability scores {i} / {len(explanations)}")
 
         return {"outsider_acceptability_scores": outsider_acceptability_scores,
                 "practitioner_acceptability_scores": practitioner_acceptability_scores,
