@@ -26,6 +26,7 @@ class DatasetSplitter(CompositeIndicator):
     def run_algorithm(self, **kwargs):
         self.input_data().clear()
 
+        # TODO: splt features en labels o.b.v. user story vs. non-user story, doe dan train_test_split en combineer de resultaten.
         training_features, testing_features, training_labels, testing_labels, training_cases, testing_cases = \
             train_test_split(kwargs["features"], kwargs["labels"], kwargs["cases"], test_size=0.2, random_state=42,
                              shuffle=True)

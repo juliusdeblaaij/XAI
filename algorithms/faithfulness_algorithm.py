@@ -61,9 +61,8 @@ class FaithfulnessAlgorithm(AbstractNonBlockingProcess):
                 for word in postive_contributing_words:
                     wordcount = self.count_word_occurrences(explanation, word)
 
-                    wordcount -= 1
-                    if wordcount < 0:
-                        wordcount = 0
+                    if wordcount > 1:
+                        wordcount = 1
 
                     total_overlapping_words += wordcount
 
