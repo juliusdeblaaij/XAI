@@ -2,6 +2,7 @@ import re
 import numpy as np
 from doxpy.models.knowledge_extraction.knowledge_graph_extractor import KnowledgeGraphExtractor
 import confuse
+import random
 
 def pre_process_text(text):
     # text = re.sub('[^a-zA-Z0-9 -]', '', str(text))
@@ -39,3 +40,24 @@ def extract_knowledge_graph(text: str):
         **graph_extraction_options)
 
     return knowledge_graph
+
+def sort_with_indices(arr):
+    sorted_indices = np.argsort(arr)
+    sorted_array = np.sort(arr)
+    return sorted_array, sorted_indices.tolist()
+
+def shuffle_with_indices(arr):
+    x = list(enumerate(arr))
+    random.shuffle(x)
+    indices, arr = zip(*x)
+    return arr, indices
+
+def label_to_story_point(label: int) -> int:
+    story_point = label
+
+    if label == 4:
+        story_point = 5
+    elif label == 5:
+        story_point = 8
+
+    return story_point

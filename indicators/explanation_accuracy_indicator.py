@@ -135,7 +135,9 @@ class ExplanationAccuracyIndicator(CompositeIndicator):
 
             explanation_accuracy_scores.append(explanation_accuracy_score)
 
-        broadcast_data({"explanation_accuracy_decisions": explanation_accuracy_decisions, "explanation_accuracy_scores": explanation_accuracy_scores})
+        broadcast_data({"explanation_accuracy_decisions": explanation_accuracy_decisions,
+                        "explanation_accuracy_scores": explanation_accuracy_scores,
+                        "practitioner_acceptability_scores": practitioner_acceptability_scores})
 
     def on_event_happened(self, data_event: DataEvent):
         super().on_event_happened(data_event.value())

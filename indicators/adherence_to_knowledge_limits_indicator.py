@@ -1,6 +1,9 @@
+import numpy as np
+
 from DataEvent import DataEvent
 from EventsBroadcaster import broadcast_data
 from indicators.CompositeIndicator import CompositeIndicator
+from myutils import sort_with_indices
 
 
 class AdherenceToKnowledgeLimitsIndicator(CompositeIndicator):
@@ -53,29 +56,29 @@ class AdherenceToKnowledgeLimitsIndicator(CompositeIndicator):
             predicted_label = predicted_labels[i]
 
             similarities = xdnn_classification_results.get("Similarities")
-            scores = xdnn_classification_results.get("Scores")
-            current_classification_similarity_score = scores[i][predicted_label]
 
-            # b) are too uncertain (not meeting a confidence threshold
-            if current_classification_similarity_score <= minimum_similarity_threshold:
-                adherence_to_similarity_threshold_flags.append(0)
-            else:
-                adherence_to_similarity_threshold_flags.append(1)
-
-            # TODO: remove unnecesary nesting of the similarities withing a cases' label ([0])
-            in_label_similarities = list(similarities[i][predicted_label][0])
+            in_label_similarities = list(similarities[i][predicted_label])
 
             training_parameters = xdnn_training_results.get("xDNNParms").get("Parameters")
             classes = list(training_parameters[predicted_label].get("Prototype").values())
 
+            sorted_in_label_similarities, original_indices = sort_with_indices(in_label_similarities)
+
+            sorted_in_label_similarities = np.flip(sorted_in_label_similarities)
+            original_indices = np.flip(original_indices)
+
             classes_with_similarities = []
-            for i, c in enumerate(classes):
-                classes_with_similarities.append([c, in_label_similarities[i]])
+            for i in range(0, len(classes)):
+                classes_with_similarities.append([classes[original_indices[i]], sorted_in_label_similarities[i]])
 
-            sorted_cases_with_similarities = sorted(classes_with_similarities, key=lambda x: x[1], reverse=True)
+            sorted_cases = [item[0] for item in classes_with_similarities]
+            sorted_similarities = [item[1] for item in classes_with_similarities]
 
-            sorted_cases = [item[0] for item in sorted_cases_with_similarities]
-            sorted_similarities = [item[1] for item in sorted_cases_with_similarities]
+            # b) are too uncertain (not meeting a confidence threshold
+            if sorted_similarities[0] <= minimum_similarity_threshold:
+                adherence_to_similarity_threshold_flags.append(0)
+            else:
+                adherence_to_similarity_threshold_flags.append(1)
 
             # c) or being too close to the runner up classification).
             if sorted_similarities[0] - sorted_similarities[1] <= minimum_similarity_distance_threshold:
@@ -87,7 +90,7 @@ class AdherenceToKnowledgeLimitsIndicator(CompositeIndicator):
 
             if correct_outside_knowledge_domain_flags[i] == 1 \
                     and adherence_to_similarity_threshold_flags[i] == 1 \
-                    and adherence_to_similarity_distance_threshold_flags == 1:
+                    and adherence_to_similarity_distance_threshold_flags[i] == 1:
 
                 adherence_to_knowledge_limits_flags.append(1)
             else:

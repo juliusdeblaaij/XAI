@@ -142,11 +142,11 @@ def DecisionMaking(Params, datates):
             kwargs = {"p":6}
             xa = data.reshape(1, -1)
             xb = PARAM[k]['Centre']
-            distances = cdist(XA=xa, XB=xb, metric='minkowski', **kwargs)
+            distances = cdist(XA=xa, XB=xb, metric='minkowski', **kwargs)[0]
             sorted_distances = np.sort(distances)
             distance = sorted_distances[0]
-            Value[k] = distance[0]
-            in_class_similarities.append(sorted_distances)
+            Value[k] = distance
+            in_class_similarities.append(1 - distances)
 
         Similarities.append(in_class_similarities)
 
