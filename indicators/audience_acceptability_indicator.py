@@ -46,13 +46,9 @@ class AudienceAcceptabilityIndicator(CompositeIndicator):
         audience_acceptability_algo.run(callback=self.on_audience_acceptability_calculated, **kwargs)
 
     def on_audience_acceptability_calculated(self, data):
-        outsider_acceptability_scores = data.get("outsider_acceptability_scores")
-        practitioner_acceptability_scores = data.get("practitioner_acceptability_scores")
-        expert_acceptability_scores = data.get("expert_acceptability_scores")
+        acceptability_scores = data.get("acceptability_scores")
 
-        broadcast_data({"outsider_acceptability_scores": outsider_acceptability_scores,
-                        "practitioner_acceptability_scores": practitioner_acceptability_scores,
-                        "expert_acceptability_scores": expert_acceptability_scores})
+        broadcast_data({"acceptability_scores": acceptability_scores})
 
     def on_event_happened(self, data_event: DataEvent):
         super().on_event_happened(data_event.value())

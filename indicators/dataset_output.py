@@ -27,7 +27,7 @@ class DatasetOutput(CompositeIndicator):
                 "adherence_to_knowledge_limits": [],
                 "correct_outside_knowledge_domain_flags": [], "adherence_to_similarity_threshold_flags": [],
                 "adherence_to_similarity_distance_threshold_flags": [], "faithfulness_scores": [],
-                "practitioner_acceptability_scores": []}
+                "acceptability_scores": []}
 
     def run_algorithm(self, **kwargs):
         self.input_data().clear()
@@ -44,25 +44,31 @@ class DatasetOutput(CompositeIndicator):
         predicted_labels = np.array(kwargs.get("classification_results").get("EstLabs").flatten()).astype(int)
         explanations = kwargs.get("explanations")
 
-        meaningfulness = np.array(kwargs.get("meaningfulness_scores"))
-        explanation_accuracy_decisions = np.array(kwargs.get("explanation_accuracy_decisions"))
-        explanation_accuracy_scores = np.array(kwargs.get("explanation_accuracy_scores"))
+        meaningfulness = np.around(np.array(kwargs.get("meaningfulness_scores")), 2)
+        explanation_accuracy_decisions = np.array(kwargs.get("explanation_accuracy_decisions")).astype(int)
+        explanation_accuracy_scores = np.around(np.array(kwargs.get("explanation_accuracy_scores")), 2)
 
-        adherence_to_knowledge_limits = np.array(kwargs.get("adherence_to_knowledge_limits"))
-        correct_outside_knowledge_domain_flags = np.array(kwargs.get("correct_outside_knowledge_domain_flags"))
-        adherence_to_similarity_threshold_flags = np.array(kwargs.get("adherence_to_similarity_threshold_flags"))
+        adherence_to_knowledge_limits = np.array(kwargs.get("adherence_to_knowledge_limits")).astype(int)
+        correct_outside_knowledge_domain_flags = np.array(kwargs.get("correct_outside_knowledge_domain_flags")).astype(int)
+        adherence_to_similarity_threshold_flags = np.array(kwargs.get("adherence_to_similarity_threshold_flags")).astype(int)
         adherence_to_similarity_distance_threshold_flags = np.array(
-            kwargs.get("adherence_to_similarity_distance_threshold_flags"))
+            kwargs.get("adherence_to_similarity_distance_threshold_flags")).astype(int)
 
-        faithfulness_scores = kwargs.get("faithfulness_scores")
-        practitioner_acceptability_scores = kwargs.get("practitioner_acceptability_scores")
+        faithfulness_scores =  np.around(np.asarray(kwargs.get("faithfulness_scores")))
+        acceptability_scores = np.around(np.asarray(kwargs.get("acceptability_scores")),2)
+
+        explanations_with_cases = []
+        for i, explanation in enumerate(explanations):
+            explanation = explanation.replace('\n', ' ')
+            explanation.replace('{case}', cases[i])
+            explanations_with_cases.append(explanation)
 
         df = pd.DataFrame({"id": ids, "x_test": cases, "y_test": labels, "y_pred": predicted_labels,
-                           "explanations": explanations,
+                           "explanations": explanations_with_cases,
 
                            "meaningfulness": meaningfulness,
 
-                           "practitioner_acceptability": practitioner_acceptability_scores,
+                           "acceptability": acceptability_scores,
                            "faithfulness": faithfulness_scores,
                            "explanation_accuracy_scores": explanation_accuracy_scores,
                            "explanation_accuracy_decisions": explanation_accuracy_decisions,

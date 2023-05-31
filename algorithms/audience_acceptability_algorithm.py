@@ -44,78 +44,29 @@ class AudienceAcceptabilityAlgorithm(AbstractNonBlockingProcess):
 
         fuzzy_variables = {
             "aspects": aspects_variable,
-            "outsider_acceptability": acceptability_variable,
-            "practitioner_acceptability": acceptability_variable,
-            "expert_acceptability": acceptability_variable,
+            "acceptability": acceptability_variable,
         }
-
-        outsider_rules = [
-            FuzzyRule(
-                premise=[
-                    ("aspects", "SPARSE"),
-                ],
-                consequence=[("outsider_acceptability", "TOTALLY_ACCEPTABLE")],
-            ),
-            FuzzyRule(
-                premise=[
-                    ("aspects", "PERTINENT"),
-                ],
-                consequence=[("outsider_acceptability", "SLIGHTLY_UNACCEPTABLE")],
-            ),
-            FuzzyRule(
-                premise=[
-                    ("aspects", "EXTENSIVE"),
-                ],
-                consequence=[("outsider_acceptability", "TOTALLY_UNACCEPTABLE")],
-            ),
-        ]
 
         practitioner_rules = [
             FuzzyRule(
                 premise=[
                     ("aspects", "SPARSE"),
                 ],
-                consequence=[("practitioner_acceptability", "UNACCEPTABLE")],
+                consequence=[("acceptability", "UNACCEPTABLE")],
             ),
             FuzzyRule(
                 premise=[
                     ("aspects", "PERTINENT"),
                 ],
-                consequence=[("practitioner_acceptability", "TOTALLY_ACCEPTABLE")],
+                consequence=[("acceptability", "TOTALLY_ACCEPTABLE")],
             ),
             FuzzyRule(
                 premise=[
                     ("aspects", "EXTENSIVE"),
                 ],
-                consequence=[("practitioner_acceptability", "UNACCEPTABLE")],
+                consequence=[("acceptability", "UNACCEPTABLE")],
             ),
         ]
-
-        expert_rules = [
-            FuzzyRule(
-                premise=[
-                    ("aspects", "SPARSE"),
-                ],
-                consequence=[("expert_acceptability", "TOTALLY_UNACCEPTABLE")],
-            ),
-            FuzzyRule(
-                premise=[
-                    ("aspects", "PERTINENT"),
-                ],
-                consequence=[("expert_acceptability", "NEUTRAL")],
-            ),
-            FuzzyRule(
-                premise=[
-                    ("aspects", "EXTENSIVE"),
-                ],
-                consequence=[("expert_acceptability", "TOTALLY_ACCEPTABLE")],
-            ),
-        ]
-
-        fuzzy_rules = []
-        fuzzy_rules.extend(outsider_rules)
-        fuzzy_rules.extend(practitioner_rules)
-        fuzzy_rules.extend(expert_rules)
 
         model = DecompositionalInference(
             and_operator="min",
@@ -126,32 +77,26 @@ class AudienceAcceptabilityAlgorithm(AbstractNonBlockingProcess):
             defuzzification_operator="cog",
         )
 
-        outsider_acceptability_scores = []
-        practitioner_acceptability_scores = []
-        expert_acceptability_scores = []
+        acceptability_scores = []
 
         for i, explanation in enumerate(explanations):
-            expert_knowledge_graph = extract_knowledge_graph(text=explanation)
+            knowledge_graph = extract_knowledge_graph(text=explanation)
 
-            explanation_aspects = get_aspects(expert_knowledge_graph)
+            explanation_aspects = get_aspects(knowledge_graph)
             explanation_aspects_amount = len(explanation_aspects)
 
             model(
                 variables=fuzzy_variables,
-                rules=fuzzy_rules,
+                rules=practitioner_rules,
                 aspects=explanation_aspects_amount
             )
 
-            acceptability_scores = model.defuzzificated_infered_memberships
+            model_results = model.defuzzificated_infered_memberships
 
-            outsider_acceptability_scores.append(acceptability_scores.get("outsider_acceptability"))
-            practitioner_acceptability_scores.append(acceptability_scores.get("practitioner_acceptability"))
-            expert_acceptability_scores.append(acceptability_scores.get("expert_acceptability"))
+            acceptability_scores.append(model_results.get("acceptability"))
 
             if i > 0:
                 if 100 % i == 0:
                     print(f"Calculated acceptability scores {i} / {len(explanations)}")
 
-        return {"outsider_acceptability_scores": outsider_acceptability_scores,
-                "practitioner_acceptability_scores": practitioner_acceptability_scores,
-                "expert_acceptability_scores": expert_acceptability_scores}
+        return acceptability_scores

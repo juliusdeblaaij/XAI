@@ -39,32 +39,24 @@ class DoXAlgorithm(AbstractNonBlockingProcess):
             question_template_list = [  # Q: the archetypal questions
                 ##### AMR
                 'What is {X}?',
-                'Who is {X}?',
                 'How is {X}?',
-                'Where is {X}?',
-                'When is {X}?',
-                'Which {X}?',
-                'Whose {X}?',
                 'Why {X}?',
-                ##### Discourse Relations
-                'In what manner is {X}?',  # (25\%),
-                'What is the reason for {X}?',  # (19\%),
-                'What is the result of {X}?',  # (16\%),
-                'What is an example of {X}?',  # (11\%),
-                'After what is {X}?',  # (7\%),
-                'While what is {X}?',  # (6\%),
-                'In what case is {X}?',  # (3),
-                'Despite what is {X}?',  # (3\%),
-                'What is contrasted with {X}?',  # (2\%),
-                'Before what is {X}?',  # (2\%),
-                'Since when is {X}?',  # (2\%),
-                'What is similar to {X}?',  # (1\%),
-                'Until when is {X}?',  # (1\%),
-                'Instead of what is {X}?',  # (1\%),
-                'What is an alternative to {X}?',  # ($\leq 1\%$),
-                'Except when it is {X}?',  # ($\leq 1\%$),
-                '{X}, unless what?',  # ($\leq 1\%$).
             ]
+
+            '''##### Discourse Relations
+                            'In what manner is {X}?',  # (25\%),
+                            'What is the reason for {X}?',  # (19\%),
+                            'What is the result of {X}?',  # (16\%),
+                            'What is an example of {X}?',  # (11\%),
+                            'After what is {X}?',  # (7\%),
+                            'In what case is {X}?',  # (3),
+                            'Despite what is {X}?',  # (3\%),
+                            'What is contrasted with {X}?',  # (2\%),
+                            'Before what is {X}?',  # (2\%),
+                            'What is similar to {X}?',  # (1\%),
+                            'Instead of what is {X}?',  # (1\%),
+                            'What is an alternative to {X}?',  # ($\leq 1\%$),
+                            '{X}, unless what?',  # ($\leq 1\%$).'''
 
             ### Define a question generator
             question_generator = lambda question_template, concept_label: question_template.replace('{X}', concept_label)

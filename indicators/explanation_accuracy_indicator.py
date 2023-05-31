@@ -25,14 +25,12 @@ class ExplanationAccuracyIndicator(CompositeIndicator):
         return self._local_data
 
     def input_signature(self) -> dict:
-        return {"outsider_acceptability_scores": [], "practitioner_acceptability_scores": [], "expert_acceptability_scores": [], "faithfulness_scores": []}
+        return {"acceptability_scores": [], "faithfulness_scores": []}
 
     def run_algorithm(self, **kwargs):
         self.input_data().clear()
 
-        outsider_acceptability_scores = kwargs.get("outsider_acceptability_scores")
-        practitioner_acceptability_scores = kwargs.get("practitioner_acceptability_scores")
-        expert_acceptability_scores = kwargs.get("expert_acceptability_scores")
+        acceptability_scores = kwargs.get("acceptability_scores")
         faithfulness_scores = kwargs.get("faithfulness_scores")
 
         faithfulness_variable = FuzzyVariable(
@@ -62,7 +60,7 @@ class ExplanationAccuracyIndicator(CompositeIndicator):
         fuzzy_variables = {
             "faithfulness": faithfulness_variable,
             # "outsider_acceptability": acceptability_variable,
-            "practitioner_acceptability": acceptability_variable,
+            "acceptability": acceptability_variable,
             # "expert_acceptability": acceptability_variable,
             "explanation_accuracy": explanation_accuracy_variable,
         }
@@ -71,35 +69,35 @@ class ExplanationAccuracyIndicator(CompositeIndicator):
             FuzzyRule(
                 premise=[
                     ("faithfulness", "HIGH"),
-                    ("AND", "practitioner_acceptability", "HIGH"),
+                    ("AND", "acceptability", "HIGH"),
                 ],
                 consequence=[("explanation_accuracy", "PASS")],
             ),
             FuzzyRule(
                 premise=[
                     ("faithfulness", "HIGH"),
-                    ("AND", "practitioner_acceptability", "MEDIUM"),
+                    ("AND", "acceptability", "MEDIUM"),
                 ],
                 consequence=[("explanation_accuracy", "PASS")],
             ),
             FuzzyRule(
                 premise=[
                     ("faithfulness", "MEDIUM"),
-                    ("AND", "practitioner_acceptability", "HIGH"),
+                    ("AND", "acceptability", "HIGH"),
                 ],
                 consequence=[("explanation_accuracy", "PASS")],
             ),
             FuzzyRule(
                 premise=[
                     ("faithfulness", "MEDIUM"),
-                    ("AND", "practitioner_acceptability", "MEDIUM"),
+                    ("AND", "acceptability", "MEDIUM"),
                 ],
                 consequence=[("explanation_accuracy", "FAIL")],
             ),
             FuzzyRule(
                 premise=[
                     ("faithfulness", "LOW"),
-                    ("OR", "practitioner_acceptability", "LOW"),
+                    ("OR", "acceptability", "LOW"),
                 ],
                 consequence=[("explanation_accuracy", "FAIL")],
             ),
@@ -118,13 +116,13 @@ class ExplanationAccuracyIndicator(CompositeIndicator):
         explanation_accuracy_decisions = []
 
         for i, faithfulness_score in enumerate(faithfulness_scores):
-            practitioner_acceptability_score = practitioner_acceptability_scores[i]
+            acceptability_score = acceptability_scores[i]
 
             model(
                 variables=fuzzy_variables,
                 rules=practitioner_rules,
                 faithfulness=faithfulness_score,
-                practitioner_acceptability=practitioner_acceptability_score
+                acceptability=acceptability_score
             )
 
             explanation_accuracy_score = model.defuzzificated_infered_memberships.get("explanation_accuracy")
@@ -137,7 +135,7 @@ class ExplanationAccuracyIndicator(CompositeIndicator):
 
         broadcast_data({"explanation_accuracy_decisions": explanation_accuracy_decisions,
                         "explanation_accuracy_scores": explanation_accuracy_scores,
-                        "practitioner_acceptability_scores": practitioner_acceptability_scores})
+                        "acceptability_scores": acceptability_scores})
 
     def on_event_happened(self, data_event: DataEvent):
         super().on_event_happened(data_event.value())

@@ -242,7 +242,7 @@ if __name__ == "__main__":
     fuzzy_variables = {
         "aspects": aspects_variable,
         "outsider_acceptability": acceptability_variable,
-        "practitioner_acceptability": acceptability_variable,
+        "acceptability": acceptability_variable,
         "expert_acceptability": acceptability_variable,
     }
 
@@ -283,19 +283,19 @@ if __name__ == "__main__":
             premise=[
                 ("aspects", "SPARSE"),
             ],
-            consequence=[("practitioner_acceptability", "UNACCEPTABLE")],
+            consequence=[("acceptability", "UNACCEPTABLE")],
         ),
         FuzzyRule(
             premise=[
                 ("aspects", "PERTINENT"),
             ],
-            consequence=[("practitioner_acceptability", "TOTALLY_ACCEPTABLE")],
+            consequence=[("acceptability", "TOTALLY_ACCEPTABLE")],
         ),
         FuzzyRule(
             premise=[
                 ("aspects", "EXTENSIVE"),
             ],
-            consequence=[("practitioner_acceptability", "UNACCEPTABLE")],
+            consequence=[("acceptability", "UNACCEPTABLE")],
         ),
     ]
 
