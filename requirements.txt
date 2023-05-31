@@ -22,8 +22,6 @@ Cython==0.29.28
 debugpy==1.6.7
 decorator==5.1.1
 dill==0.3.6
-# Editable install with no version control (doxpy==3.0)
--e c:\users\skikk\downloads\doxpy-master\doxpy
 en-core-web-trf @ https://github.com/explosion/spacy-models/releases/download/en_core_web_trf-3.4.1/en_core_web_trf-3.4.1-py3-none-any.whl#sha256=35c8490d34e9cebe129ee1c9143977aaf02d4bd6d224f30a79baf3838627339b
 entrypoints==0.4
 filelock==3.12.0
