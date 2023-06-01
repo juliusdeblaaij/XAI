@@ -58,6 +58,7 @@ class DatasetOutput(CompositeIndicator):
         explanations_with_cases = []
         for i, explanation in enumerate(explanations):
             explanation = explanation.replace('\n', ' ')
+            explanation = explanation.replace(';', ' ')
             explanation.replace('{case}', cases[i])
             explanations_with_cases.append(explanation)
 
@@ -75,7 +76,7 @@ class DatasetOutput(CompositeIndicator):
                            "similarity_threshold": adherence_to_similarity_threshold_flags,
                            "adherence_to_knowledge_limits": adherence_to_knowledge_limits})
 
-        df.to_csv("xai_results.csv", index=False, sep='\t')
+        df.to_csv("xai_results.csv", index=False, sep=';', quotechar='"')
 
     def on_event_happened(self, data_event: DataEvent):
         super().on_event_happened(data_event.value())
