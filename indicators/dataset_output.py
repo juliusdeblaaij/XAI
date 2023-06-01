@@ -26,7 +26,7 @@ class DatasetOutput(CompositeIndicator):
                 "explanation_accuracy_decisions": [], "explanation_accuracy_scores": [],
                 "adherence_to_knowledge_limits": [],
                 "correct_outside_knowledge_domain_flags": [], "adherence_to_similarity_threshold_flags": [],
-                "adherence_to_similarity_distance_threshold_flags": [], "faithfulness_scores": [],
+                "faithfulness_scores": [],
                 "acceptability_scores": []}
 
     def run_algorithm(self, **kwargs):
@@ -51,8 +51,6 @@ class DatasetOutput(CompositeIndicator):
         adherence_to_knowledge_limits = np.array(kwargs.get("adherence_to_knowledge_limits")).astype(int)
         correct_outside_knowledge_domain_flags = np.array(kwargs.get("correct_outside_knowledge_domain_flags")).astype(int)
         adherence_to_similarity_threshold_flags = np.array(kwargs.get("adherence_to_similarity_threshold_flags")).astype(int)
-        adherence_to_similarity_distance_threshold_flags = np.array(
-            kwargs.get("adherence_to_similarity_distance_threshold_flags")).astype(int)
 
         faithfulness_scores =  np.around(np.asarray(kwargs.get("faithfulness_scores")))
         acceptability_scores = np.around(np.asarray(kwargs.get("acceptability_scores")),2)
@@ -75,10 +73,9 @@ class DatasetOutput(CompositeIndicator):
 
                            "okd": correct_outside_knowledge_domain_flags,
                            "similarity_threshold": adherence_to_similarity_threshold_flags,
-                           "similarity_dist_threshold": adherence_to_similarity_distance_threshold_flags,
                            "adherence_to_knowledge_limits": adherence_to_knowledge_limits})
 
-        df.to_csv("xai_results.csv", index=False)
+        df.to_csv("xai_results.csv", index=False, sep='\t')
 
     def on_event_happened(self, data_event: DataEvent):
         super().on_event_happened(data_event.value())

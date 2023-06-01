@@ -50,7 +50,7 @@ class DatasetSplitter(CompositeIndicator):
                 user_story_features.append(features[i])
                 user_story_labels.append(label)
 
-        test_size = 0.002
+        test_size = 0.2
 
         non_user_story_training_features, non_user_story_testing_features, non_user_story_training_labels, non_user_story_testing_labels, non_user_story_training_cases, non_user_story_testing_cases = \
             train_test_split(non_user_story_features, non_user_story_labels, non_user_story_cases, test_size=test_size, random_state=42,
