@@ -52,7 +52,7 @@ if __name__ == "__main__":
     xdnn_trainer = xDNNTrainer()
     xdnn_classifier = xDNNClassifier()
 
-    faithfulness_indicator = FaithfulnessIndicator()
+    # faithfulness_indicator = FaithfulnessIndicator()
     embedder = Embedder()
     dataset_splitter = DatasetSplitter()
     explanation_generator = ExplanationsGenerator()

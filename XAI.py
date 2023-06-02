@@ -207,10 +207,10 @@ What are known issues of the technology used to automatically determine the amou
 if __name__ == "__main__":
 
     outsider_explicandum_graph = get_explicandum_graph(outsider_questions, "outsider")
-    outsider_aspects_amount = len(get_aspects(outsider_explicandum_graph))
+    outsider_details_amount = len(get_aspects(outsider_explicandum_graph))
 
     practitioner_explicandum_graph = get_explicandum_graph(practitioner_questions, "practitioner")
-    practitioner_aspects_amount = len(get_aspects(practitioner_explicandum_graph))
+    practitioner_details_amount = len(get_aspects(practitioner_explicandum_graph))
 
     experts_explicandum_graph = get_explicandum_graph(expert_questions, "expert")
     experts_aspects_amount = len(get_aspects(experts_explicandum_graph))
@@ -221,8 +221,8 @@ if __name__ == "__main__":
     aspects_variable = FuzzyVariable(
             universe_range=(0, 20),
             terms = {
-                "SPARSE": ('zmf', outsider_aspects_amount, outsider_aspects_amount + 2),
-                "PERTINENT": ("gbellmf", practitioner_aspects_amount, practitioner_aspects_amount / 2, 4),
+                "SPARSE": ('zmf', outsider_details_amount, outsider_details_amount + 2),
+                "PERTINENT": ("gbellmf", practitioner_details_amount, practitioner_details_amount / 2, 4),
                 "EXTENSIVE": ("smf", experts_aspects_amount, experts_aspects_amount + 2)
             }
         )
@@ -251,8 +251,8 @@ if __name__ == "__main__":
     plt.savefig('aspects.png')
     plt.clf()
 
-    print(f"outsider_aspects_amount: {outsider_aspects_amount}")
-    print(f"practitioner_aspects_amount: {practitioner_aspects_amount}")
+    print(f"outsider_details_amount: {outsider_details_amount}")
+    print(f"practitioner_details_amount: {practitioner_details_amount}")
     print(f"experts_aspects_amount: {experts_aspects_amount}")
 
     from fuzzy_expert.rule import FuzzyRule

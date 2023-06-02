@@ -5,6 +5,7 @@ from EventsBroadcaster import broadcast_data
 from algorithms.faithfulness_algorithm_adapter import FaithfulnessAlgorithmAdapter
 from algorithms.xdnn_algorithm_adapter import xDNNAlgorithmAdapter
 from d2v import doc2vec
+from dataset_cleaner import filter_allowed_words
 from indicators.CompositeIndicator import CompositeIndicator
 from myutils import pre_process_text, sort_with_indices, label_to_story_point
 
@@ -19,10 +20,9 @@ def generate_valid_user_story_explanation(case: str, predicted_label: int, simil
     explanation = f'XUSP is an algorithm that is designed to automatically determine the amount of story points for a ' \
                   f'given user story.\n' \
                   f'The prediction of the story point value is made using a specific process called xDNN.\n' \
-                  f'xDNN classifies items based on the similarity between it and already learned items.\n' \
-                  f'Prediction:\n' + \
-                  f'{case.capitalize()}" is a user story, and is worth {sp} story points. This was predicted because it' \
-                  f' is most similar to: \n {similar_cases[0].capitalize()}'
+                  f'xDNN classifies texts based on the similarity between it and already learned texts.\n' \
+                  f'The prediction is that the text {case.capitalize().replace(".", "")} is a user story, and is worth {sp} story points. This was predicted because it' \
+                  f' is most similar to the text "{similar_cases[0].capitalize().replace(".", "")}"'
 
     similar_cases_sentences = ""
 
@@ -34,12 +34,12 @@ def generate_valid_user_story_explanation(case: str, predicted_label: int, simil
             if i == 0:
                 continue
             if i == 1 or i == len(similar_cases) - 1:
-                appendage = f' and similar to "{similar_case.capitalize()}"'
+                appendage = f' and similar to the text "{similar_case.capitalize().replace(".", "")}"'
 
                 if i == len(similar_cases) - 1:
-                    appendage += f' (which are all user stories with a worth of {sp} story points).'
+                    appendage += f' (and these texts are all user stories with a worth of {sp} story points).'
             else:
-                appendage = f', "{similar_case.capitalize()}"'
+                appendage = f', "{similar_case.capitalize().replace(".", "")}"'
 
             similar_cases_sentences += appendage
     else:
@@ -55,9 +55,8 @@ def generate_valid_non_user_story_explanation(case: str, similar_cases: list) ->
 
     explanation = f'XUSP is an algorithm that is designed to automatically determine the amount of story points for a given user story.\n' \
                   f'The prediction of the story point value is made using a specific process called xDNN.\n' \
-                  f'xDNN classifies items based on the similarity between it and already learned items.\n' \
-                  f'Prediction:\n' + \
-                  f'"The input text was refused as it is not a user story. This was determined because {case.capitalize()}" was most similar to:\n"{similar_cases[0].capitalize()}"'
+                  f'xDNN classifies texts based on the similarity between it and already learned texts.\n' \
+                  f'The text was refused as it is not a user story. This was determined because the text {case.capitalize().replace(".", "")} was most similar to the text {similar_cases[0].capitalize().replace(".", "")}'
 
     similar_cases_sentences = ""
 
@@ -69,12 +68,12 @@ def generate_valid_non_user_story_explanation(case: str, similar_cases: list) ->
             if i == 0:
                 continue
             if i == 1 or i == len(similar_cases) - 1:
-                appendage = f' and similar to "{similar_case.capitalize()}"'
+                appendage = f' and similar to the text "{similar_case.capitalize().replace(".", "")}"'
 
                 if i == len(similar_cases) - 1:
-                    appendage += " (which are not user stories)."
+                    appendage += " (and these texts are not user stories)."
             else:
-                appendage = f', "{similar_case.capitalize()}"'
+                appendage = f', "{similar_case.capitalize().replace(".", "")}"'
 
             similar_cases_sentences += appendage
     else:
@@ -92,9 +91,9 @@ def generate_outside_knowledge_limits_explanation(case: str, predicted_label: in
 
     explanation = f'XUSP is an algorithm that is designed to automatically determine the amount of story points for a given user story.\n' \
                   f'The prediction of the story point value is made using a specific process called xDNN.\n' \
-                  f'xDNN classifies items based on the similarity between it and already learned items.\n' \
-                  f' XUSP could not provide an answer as the amount of similarity between {case.capitalize()}"\n' \
-                  f'and "{similar_cases[0].capitalize()}" does not exceed the minimum threshold of 75%.'
+                  f'xDNN classifies texts based on the similarity between it and already learned texts.\n' \
+                  f' XUSP could not provide an answer as the amount of similarity between the given text "{case.capitalize().replace(".", "")}"\n' \
+                  f'and the most similar text "{similar_cases[0].capitalize().replace(".", "")}" does not exceed the minimum threshold of 75%.'
 
     return explanation
 
@@ -148,7 +147,6 @@ class ExplanationsGenerator(CompositeIndicator):
 
     def input_signature(self) -> dict:
         return {"testing_original_cases": [],
-                "testing_cases": [],
                 "training_results": {},
                 "classification_results": {},
                 "adherence_to_knowledge_limits": [],
@@ -170,7 +168,7 @@ class ExplanationsGenerator(CompositeIndicator):
 
         explanations = []
 
-        for i, case in enumerate(kwargs["testing_cases"]):
+        for i, case in enumerate(kwargs["testing_original_cases"]):
             predicted_label = predicted_labels[i]
             explanation = ""
 

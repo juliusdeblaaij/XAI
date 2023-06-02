@@ -1,13 +1,9 @@
 from DataEvent import DataEvent
 from EventsBroadcaster import broadcast_data
-from algorithms.audience_acceptability_algorithm_adapter import AudienceAcceptabilityAlgorithmAdapter
 from indicators.CompositeIndicator import CompositeIndicator
 from fuzzy_expert.inference import DecompositionalInference
 from fuzzy_expert.variable import FuzzyVariable
 from fuzzy_expert.rule import FuzzyRule
-from myutils import *
-from get_aspects import get_aspects
-
 
 class ExplanationAccuracyIndicator(CompositeIndicator):
 

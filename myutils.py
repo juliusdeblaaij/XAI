@@ -1,7 +1,9 @@
 import re
 import numpy as np
+from nltk import sent_tokenize
 from nltk.tokenize.punkt import PunktParameters, PunktSentenceTokenizer
 
+from dataset_cleaner import filter_allowed_words_in_sentences
 from doxpy.models.knowledge_extraction.knowledge_graph_extractor import KnowledgeGraphExtractor
 import confuse
 import random
@@ -36,10 +38,11 @@ graph_extraction_options = config["graph_extraction_options"].get(dict)
 
 
 def extract_knowledge_graph(text: str):
-    sentences = split_text_into_sentences(text)
+    sentences_in_text = sent_tokenize(text)
+    filtered_sentences_in_text = filter_allowed_words_in_sentences(sentences_in_text, keep_stop_words=True)
 
     knowledge_graph = KnowledgeGraphExtractor(graph_builder_options).set_content_list(
-        content_list=sentences,
+        content_list=filtered_sentences_in_text,
         **graph_cleaning_options).build(
         **graph_extraction_options)
 

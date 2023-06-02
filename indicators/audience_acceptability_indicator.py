@@ -2,11 +2,6 @@ from DataEvent import DataEvent
 from EventsBroadcaster import broadcast_data
 from algorithms.audience_acceptability_algorithm_adapter import AudienceAcceptabilityAlgorithmAdapter
 from indicators.CompositeIndicator import CompositeIndicator
-from fuzzy_expert.inference import DecompositionalInference
-from fuzzy_expert.variable import FuzzyVariable
-from fuzzy_expert.rule import FuzzyRule
-from myutils import *
-from get_aspects import get_aspects
 
 
 class AudienceAcceptabilityIndicator(CompositeIndicator):
@@ -32,13 +27,13 @@ class AudienceAcceptabilityIndicator(CompositeIndicator):
 
         outsider_aspects_amount = len(kwargs.get("outsider_aspects"))
         practitioner_aspects_amount = len(kwargs.get("practitioner_aspects"))
-        experts_aspects_amount = len(kwargs.get("expert_aspects"))
+        expert_aspects_amount = len(kwargs.get("expert_aspects"))
         explanations = kwargs.get("explanations")
 
         kwargs = {
             "outsider_aspects_amount": outsider_aspects_amount,
             "practitioner_aspects_amount": practitioner_aspects_amount,
-            "experts_aspects_amount": experts_aspects_amount,
+            "expert_aspects_amount": expert_aspects_amount,
             "explanations": explanations
         }
 

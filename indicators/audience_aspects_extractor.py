@@ -4,7 +4,7 @@ from EventsBroadcaster import broadcast_data
 from doxpy.models.knowledge_extraction.knowledge_graph_extractor import KnowledgeGraphExtractor
 from indicators.CompositeIndicator import CompositeIndicator
 import confuse
-from get_aspects import get_aspects
+from dox_utils import get_aspects_from, get_aspects_from
 from myutils import *
 
 class AudienceAspectsExtractor(CompositeIndicator):
@@ -34,15 +34,15 @@ class AudienceAspectsExtractor(CompositeIndicator):
 
         outsider_knowledge_graph = extract_knowledge_graph(text=outsider_questions)
 
-        outsider_aspects = get_aspects(outsider_knowledge_graph)
+        outsider_aspects = get_aspects_from(outsider_knowledge_graph)
 
         practitioner_knowledge_graph = extract_knowledge_graph(text=practitioner_questions)
 
-        practitioner_aspects = get_aspects(practitioner_knowledge_graph)
+        practitioner_aspects = get_aspects_from(practitioner_knowledge_graph)
 
         expert_knowledge_graph = extract_knowledge_graph(text=expert_questions)
 
-        expert_aspects = get_aspects(expert_knowledge_graph)
+        expert_aspects = get_aspects_from(expert_knowledge_graph)
 
         broadcast_data({"outsider_aspects": outsider_aspects, "practitioner_aspects": practitioner_aspects, "expert_aspects": expert_aspects})
 
