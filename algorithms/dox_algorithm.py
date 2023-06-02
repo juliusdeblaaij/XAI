@@ -27,7 +27,7 @@ class DoXAlgorithm(AbstractNonBlockingProcess):
 
         for i, case in enumerate(cases):
             sentences_in_case = sent_tokenize(case)
-            filtered_sentences_in_case = filter_allowed_words_in_sentences(sentences_in_case)
+            filtered_sentences_in_case = filter_allowed_words_in_sentences(sentences_in_case, keep_stop_words=True) # Keeping stop words increases meaningfulness scores
 
             phi_sentences = filtered_sentences_in_case
 
