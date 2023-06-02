@@ -2,6 +2,7 @@ import csv
 from multiprocessing import current_process
 
 from EventsBroadcaster import broadcast_data
+from dataset_cleaner import filter_allowed_words
 from indicators.adherence_to_knowledge_limits_indicator import AdherenceToKnowledgeLimitsIndicator
 from indicators.audience_acceptability_indicator import AudienceAcceptabilityIndicator
 from indicators.audience_aspects_extractor import AudienceAspectsExtractor
@@ -26,17 +27,25 @@ if __name__ == "__main__":
         next(documents_reader)
         data = list(documents_reader)
 
+    original_cases = []
     cleaned_cases = []
     labels = []
 
-    for row in data:
+    for i, row in enumerate(data):
         if row[2] is None or row[2] == ' ':
             continue
 
-        label = int(row[2])
+        if i > 100:
+            break
+
+        label = int(row[2]) - 1
         labels.append(label)
 
-        cleaned_case = pre_process_text(row[1])
+        case = row[1]
+
+        cleaned_case = " ".join(str(case).split())
+        cleaned_case.replace(';', '')
+        cleaned_case.replace('\n', '')
         cleaned_cases.append(cleaned_case)
 
     corpus_trainer = CorpusTrainer()
@@ -60,19 +69,18 @@ if __name__ == "__main__":
 
     broadcast_data({
         "labels": labels,
-        "cases": cleaned_cases
+        "cases": cleaned_cases,
     })
 
     outsider_questions = """What is a user story?
     What is an example of a user story?
     What was the prediction for this user story?"""
 
-    practitioner_questions = """What is a user story?
-    What is an example of a user story?
-    What was the prediction for this user story?
-    What features of the user story contributed to the story points prediction?
-    How can a user story be refused?
-    Which specific process was used to automatcally determine the amount of story points for a user story?"""
+    practitioner_questions = """What was the prediction for this user story? 
+    What features of the user story contributed to the story points prediction? 
+    How can a user story be refused? 
+    Which specific process was used to automatcally determine the amount of story points for a user story?
+    """
 
     expert_questions = """What is a user story?
     What is an example of a user story?

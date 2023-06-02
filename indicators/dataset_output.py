@@ -21,7 +21,7 @@ class DatasetOutput(CompositeIndicator):
         return self._local_data
 
     def input_signature(self) -> dict:
-        return {"testing_cases": [], "testing_labels": [], "classification_results": {}, "explanations": [],
+        return {"testing_cases": [], "testing_original_cases": [], "testing_labels": [], "classification_results": {}, "explanations": [],
                 "meaningfulness_scores": [],
                 "explanation_accuracy_decisions": [], "explanation_accuracy_scores": [],
                 "adherence_to_knowledge_limits": [],
@@ -33,6 +33,7 @@ class DatasetOutput(CompositeIndicator):
         self.input_data().clear()
 
         cases = np.array(kwargs.get("testing_cases"))
+        original_cases = np.array(kwargs.get("testing_original_cases"))
         ids = []
 
         for i in range(0, len(cases)):
@@ -55,15 +56,15 @@ class DatasetOutput(CompositeIndicator):
         faithfulness_scores =  np.around(np.asarray(kwargs.get("faithfulness_scores")))
         acceptability_scores = np.around(np.asarray(kwargs.get("acceptability_scores")),2)
 
-        explanations_with_cases = []
+        """explanations_with_cases = []
         for i, explanation in enumerate(explanations):
             explanation = explanation.replace('\n', ' ')
             explanation = explanation.replace(';', ' ')
             explanation.replace('{case}', cases[i])
-            explanations_with_cases.append(explanation)
+            explanations_with_cases.append(explanation)"""
 
         df = pd.DataFrame({"id": ids, "x_test": cases, "y_test": labels, "y_pred": predicted_labels,
-                           "explanations": explanations_with_cases,
+                           "explanations": explanations,
 
                            "meaningfulness": meaningfulness,
 

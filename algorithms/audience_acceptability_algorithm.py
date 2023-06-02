@@ -21,25 +21,57 @@ class AudienceAcceptabilityAlgorithm(AbstractNonBlockingProcess):
         if explanations is None:
             raise ValueError("Attempted to calculate audience acceptability without providing 'explanations'.")
 
+        outsider_aspects_amount = outsider_aspects_amount * 2
+        practitioner_aspects_amount = practitioner_aspects_amount * 2
+        experts_aspects_amount = experts_aspects_amount * 2
+
+        aspects_amount_universal_limit = 40
+
+        if outsider_aspects_amount > aspects_amount_universal_limit:
+            outsider_aspects_amount = aspects_amount_universal_limit
+        if practitioner_aspects_amount > aspects_amount_universal_limit:
+            practitioner_aspects_amount = aspects_amount_universal_limit
+        if experts_aspects_amount > aspects_amount_universal_limit:
+            experts_aspects_amount = aspects_amount_universal_limit
+
+
+        scaled_outsider_aspects_amount = (outsider_aspects_amount / aspects_amount_universal_limit) * 10
+        scaled_practitioner_aspects_amount = (practitioner_aspects_amount / aspects_amount_universal_limit) * 10
+        scaled_experts_aspects_amount = (experts_aspects_amount / aspects_amount_universal_limit) * 10
+
+        # TODO: herschrijf acceptability van de grond op met theoretische onderbouwing!!!
+
         aspects_variable = FuzzyVariable(
-            universe_range=(0, 20),
+            universe_range=(0, aspects_amount_universal_limit),
             terms={
-                "SPARSE": ('zmf', outsider_aspects_amount, outsider_aspects_amount + 2),
-                "PERTINENT": ("gbellmf", practitioner_aspects_amount, practitioner_aspects_amount / 2, 4),
-                "EXTENSIVE": ("smf", experts_aspects_amount, experts_aspects_amount + 2)
+                "SPARSE": ('zmf', scaled_outsider_aspects_amount, scaled_outsider_aspects_amount + 2),
+                "PERTINENT": ("gbellmf", scaled_practitioner_aspects_amount, scaled_practitioner_aspects_amount / 2, 4),
+                "EXTENSIVE": ("smf", scaled_experts_aspects_amount, scaled_experts_aspects_amount + 2)
             }
         )
 
-        acceptability_variable = FuzzyVariable(
-            universe_range=(0, 10),
+        """acceptability_variable = FuzzyVariable(
+            universe_range=(0, aspects_amount_universal_limit),
             terms={
-                "TOTALLY_UNACCEPTABLE": ('trapmf', 0, 0, 1, 1.5),
+                "TOTALLY_UNACCEPTABLE": ('zmf', 0.1 * aspects_amount_universal_limit, 0.15 * aspects_amount_universal_limit),
+                "UNACCEPTABLE": ('trapmf', 0.1 * aspects_amount_universal_limit, 0.15 * aspects_amount_universal_limit, 0.25 * aspects_amount_universal_limit, 0.3 * aspects_amount_universal_limit),
+                "SLIGHTLY_UNACCEPTABLE": ('trapmf', 0.25 * aspects_amount_universal_limit, 0.3 * aspects_amount_universal_limit, 0.4 * aspects_amount_universal_limit, 0.45 * aspects_amount_universal_limit),
+                "NEUTRAL": ('trapmf', 0.4 * aspects_amount_universal_limit, 0.45 * aspects_amount_universal_limit, 0.55 * aspects_amount_universal_limit, 0.6 * aspects_amount_universal_limit),
+                "SLIGHTLY_ACCEPTABLE": ('trapmf', 0.55 * aspects_amount_universal_limit, 0.6 * aspects_amount_universal_limit, 0.7 * aspects_amount_universal_limit, 0.75 * aspects_amount_universal_limit),
+                "ACCEPTABLE": ('trapmf', 0.7 * aspects_amount_universal_limit, 0.75 * aspects_amount_universal_limit, 0.85 * aspects_amount_universal_limit, 0.9 * aspects_amount_universal_limit),
+                "TOTALLY_ACCEPTABLE": ('sigmf', 0.85 * aspects_amount_universal_limit, 0.9 * aspects_amount_universal_limit)
+            })"""
+
+        acceptability_variable = FuzzyVariable(
+            universe_range=(0, aspects_amount_universal_limit),
+            terms={
+                "TOTALLY_UNACCEPTABLE": ('zmf', 1, 1.5),
                 "UNACCEPTABLE": ('trapmf', 1, 1.5, 2.5, 3),
                 "SLIGHTLY_UNACCEPTABLE": ('trapmf', 2.5, 3, 4, 4.5),
                 "NEUTRAL": ('trapmf', 4, 4.5, 5.5, 6),
                 "SLIGHTLY_ACCEPTABLE": ('trapmf', 5.5, 6, 7, 7.5),
                 "ACCEPTABLE": ('trapmf', 7, 7.5, 8.5, 9),
-                "TOTALLY_ACCEPTABLE": ('trapmf', 8.5, 9, 10, 10)
+                "TOTALLY_ACCEPTABLE": ('sigmf', 8.5, 9)
             })
 
         fuzzy_variables = {
@@ -85,10 +117,15 @@ class AudienceAcceptabilityAlgorithm(AbstractNonBlockingProcess):
             explanation_aspects = get_aspects(knowledge_graph)
             explanation_aspects_amount = len(explanation_aspects)
 
+            if explanation_aspects_amount > aspects_amount_universal_limit:
+                explanation_aspects_amount = aspects_amount_universal_limit
+
+            aspects_scaled = (explanation_aspects_amount / aspects_amount_universal_limit) * 10
+
             model(
                 variables=fuzzy_variables,
                 rules=practitioner_rules,
-                aspects=explanation_aspects_amount
+                aspects=aspects_scaled
             )
 
             model_results = model.defuzzificated_infered_memberships

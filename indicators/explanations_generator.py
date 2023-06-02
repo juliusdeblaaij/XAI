@@ -16,13 +16,13 @@ def generate_valid_user_story_explanation(case: str, predicted_label: int, simil
 
     sp = label_to_story_point(predicted_label)
 
-    explanation = f'"Introduction:\n' + \
-                  f'XUSP is an algorithm that is designed to automatically determine the amount of story points for a given user story.\n' + \
-                  f'A user story is a description of a feature that must be developed for a specific end-user ofa product, who wants the feature because it creates certain value.' + \
-                  f'An example of a user story is: "As a new user, I would like to have a contact form, so that I can contact customer service for help with product setup."\n' + \
-                  f'The prediction of the story point value is made using a specific process called xDNN, which classifies items based on the similarity between it and already learned items.\n' + \
+    explanation = f'XUSP is an algorithm that is designed to automatically determine the amount of story points for a ' \
+                  f'given user story.\n' \
+                  f'The prediction of the story point value is made using a specific process called xDNN.\n' \
+                  f'xDNN classifies items based on the similarity between it and already learned items.\n' \
                   f'Prediction:\n' + \
-                  f'{case.capitalize()}" is a user story, and is worth {sp} story points; because it is most similar to:\n{similar_cases[0].capitalize()}'
+                  f'{case.capitalize()}" is a user story, and is worth {sp} story points. This was predicted because it' \
+                  f' is most similar to: \n {similar_cases[0].capitalize()}'
 
     similar_cases_sentences = ""
 
@@ -53,13 +53,11 @@ def generate_valid_non_user_story_explanation(case: str, similar_cases: list) ->
     if len(similar_cases) == 0:
         raise ValueError('The "similar_cases" list must not be empty.')
 
-    explanation = f'"Introduction:\n' + \
-                  f'XUSP is an algorithm that is designed to automatically determine the amount of story points for a given user story.\n' + \
-                  f'A user story is a description of a feature that must be developed for a specific end-user ofa product, who wants the feature because it creates certain value.' + \
-                  f'An example of a user story is: "As a new user, I would like to have a contact form, so that I can contact customer service for help with product setup."\n' + \
-                  f'The prediction of the story point value is made using a specific process called xDNN, which classifies items based on the similarity between it and already learned items.\n' + \
+    explanation = f'XUSP is an algorithm that is designed to automatically determine the amount of story points for a given user story.\n' \
+                  f'The prediction of the story point value is made using a specific process called xDNN.\n' \
+                  f'xDNN classifies items based on the similarity between it and already learned items.\n' \
                   f'Prediction:\n' + \
-                  f'"{case.capitalize()}" is a not user story; because it is most similar to:\n"{similar_cases[0].capitalize()}"'
+                  f'"The input text was refused as it is not a user story. This was determined because {case.capitalize()}" was most similar to:\n"{similar_cases[0].capitalize()}"'
 
     similar_cases_sentences = ""
 
@@ -92,12 +90,11 @@ def generate_outside_knowledge_limits_explanation(case: str, predicted_label: in
 
     sp = label_to_story_point(predicted_label)
 
-    explanation = f'"Introduction:\n' + \
-                  f'XUSP is an algorithm that is designed to automatically determine the amount of story points for a given user story.\n' + \
-                  f'A user story is a description of a feature that must be developed for a specific end-user ofa product, who wants the feature because it creates certain value.' + \
-                  f'An example of a user story is: "As a new user, I would like to have a contact form, so that I can contact customer service for help with product setup."\n' + \
-                  f'The prediction of the story point value is made using a specific process called xDNN, which classifies items based on the similarity between it and already learned items.\n' + \
-                  f' XUSP could not provide an answer as the amount of similarity between "{case.capitalize()}" and "{similar_cases[0].capitalize()}" does not exceed the minimum threshold of 75%.'
+    explanation = f'XUSP is an algorithm that is designed to automatically determine the amount of story points for a given user story.\n' \
+                  f'The prediction of the story point value is made using a specific process called xDNN.\n' \
+                  f'xDNN classifies items based on the similarity between it and already learned items.\n' \
+                  f' XUSP could not provide an answer as the amount of similarity between {case.capitalize()}"\n' \
+                  f'and "{similar_cases[0].capitalize()}" does not exceed the minimum threshold of 75%.'
 
     return explanation
 
@@ -150,7 +147,8 @@ class ExplanationsGenerator(CompositeIndicator):
         return self._local_data
 
     def input_signature(self) -> dict:
-        return {"testing_cases": [],
+        return {"testing_original_cases": [],
+                "testing_cases": [],
                 "training_results": {},
                 "classification_results": {},
                 "adherence_to_knowledge_limits": [],
