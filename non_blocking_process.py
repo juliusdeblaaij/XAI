@@ -6,6 +6,8 @@ from time import sleep
 
 class AbstractNonBlockingProcess(ABC):
 
+    pid = 0
+
     def __init__(self, callback_queue: Queue, callback, daemon=False, **kwargs):
         """
         Creates a non-blocking child process with callback.
@@ -20,6 +22,7 @@ class AbstractNonBlockingProcess(ABC):
         p = Process(target=self._main_process, daemon=daemon,
                     args=(callback_queue, self._callback_thread, callback), kwargs=kwargs)
         p.start()
+        self.pid = p.pid
 
         t = Thread(target=self._callback_caller, args=(callback_queue,))
         t.start()

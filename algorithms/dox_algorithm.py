@@ -63,4 +63,9 @@ class DoXAlgorithm(AbstractNonBlockingProcess):
             average_dox_scores.append(average_dox)
             print(f"Calculated {i + 1} out of {len(cases)} DoX.")
 
-        return average_dox_scores
+        kwargs = {
+            "average_dox_scores": average_dox_scores,
+            "pid": self.pid,
+        }
+
+        return kwargs

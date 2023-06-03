@@ -1,15 +1,11 @@
-import re
-import nltk
 from nltk import PorterStemmer, sent_tokenize
 
 from foldoc_compsci_corpus import foldoc_dictionary_corpus
 
-nltk.download('words')
 from nltk.corpus import stopwords as sw
 from inflector.languages.english import *
 english_inflector = English()
 
-import nltk
 from nltk.corpus import wordnet
 
 wordnet_full = wordnet.all_lemma_names()

@@ -4,10 +4,8 @@ Based on "The Free On-line Dictionary of Computing, http://foldoc.org/, Editor D
 
 import re
 import nltk
-nltk.download('stopwords')
 from nltk.corpus import stopwords
 stop_words = set(stopwords.words('english'))
-
 
 foldoc_dictionary_path = 'foldoc-computing-dictionary.txt'
 _foldoc_compsci_corpus = None

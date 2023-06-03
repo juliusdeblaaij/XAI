@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 import joblib
 import numpy as np
 
@@ -7,8 +9,12 @@ from algorithms.faithfulness_algorithm_adapter import FaithfulnessAlgorithmAdapt
 from algorithms.tfidf_vectorizer_algorithm_adapter import TfidfVectorizerAlgorithmAdapter
 from algorithms.xdnn_algorithm_adapter import xDNNAlgorithmAdapter
 from d2v import doc2vec
+from dataset_cleaner import filter_allowed_words
 from indicators.CompositeIndicator import CompositeIndicator
 from myutils import pre_process_text, pad_array
+
+
+workers = OrderedDict()
 
 
 class FaithfulnessIndicator(CompositeIndicator):
@@ -32,76 +38,59 @@ class FaithfulnessIndicator(CompositeIndicator):
     def run_algorithm(self, **kwargs):
         self.input_data().clear()
 
-        cleaned_cases = []
+        all_cleaned_cases = []
 
         for case in kwargs["testing_cases"]:
-            cleaned_text = pre_process_text(case)
-            cleaned_cases.append(cleaned_text)
-
-        faithfulness_algo = FaithfulnessAlgorithmAdapter()
+            cleaned_text = filter_allowed_words(case)
+            all_cleaned_cases.append(cleaned_text)
 
         xdnn_training_results = kwargs.get("training_results")
         xdnn_classification_results = kwargs.get("classification_results")
 
-        predicted_labels = xdnn_classification_results.get("EstLabs")
-        explanations = kwargs.get("explanations")
+        all_predicted_labels = xdnn_classification_results.get("EstLabs")
+        all_explanations = kwargs.get("explanations")
 
-        kwargs = {
-            "cases": cleaned_cases,
-            "class_names": ["Not a user story", "1 SP", "2 SP", "3 SP", "5 SP", "8 SP"],
-            "classifier_fn": self.classifier_fn,
-            "predicted_labels": predicted_labels,
-            "explanations": explanations,
-            "xdnn_training_results": xdnn_training_results,
-            "xdnn_classification_results": xdnn_classification_results,
-        }
 
-        faithfulness_algo.run(callback=self.on_faithfulness_calculated, **kwargs)
+        all_label_names = ["Not a user story", "1 SP", "2 SP", "3 SP", "5 SP", "8 SP"]
 
-    def classifier_fn(self, data):
-        results = self.xdnn_classifier(data)
-        return results
-    def xdnn_classifier(self, data=None, **kwargs):
+        case_details = np.column_stack((all_cleaned_cases, all_predicted_labels, all_explanations))
 
-        if data is not None:
-            if type(data) == type([]):
+        split_case_details = np.array_split(np.asarray(case_details), 4)
+        for case_details in split_case_details:
 
-                case_embeddings = []
+            batch_cleaned_cases, batch_predicted_labels, batch_explanations = np.array_split(case_details, 3, 1)
 
-                vectorizer_file_path = r"C:\Users\SKIKK\PycharmProjects\XAI\vectorizer.pkl"
+            kwargs = {
+                "cases": batch_cleaned_cases,
+                "predicted_labels": batch_predicted_labels,
+                "explanations": batch_explanations,
+                "label_names": all_label_names,
+                "xdnn_training_results": xdnn_training_results,
+                "xdnn_classification_results": xdnn_classification_results,
+            }
 
-                vectorizer = joblib.load(vectorizer_file_path)
-                vectorizer.input = 'content'
+            faithfulness_algo = FaithfulnessAlgorithmAdapter()
+            faithfulness_algo.run(callback=self.on_faithfulness_calculated, **kwargs)
+            workers[str(faithfulness_algo.pid)] = None
 
-                for i, string in enumerate(data):
-                    cleaned_text = pre_process_text(string)
 
-                    case_embedding = vectorizer.transform([cleaned_text])
-                    case_embedding = np.array(case_embedding.data)
-                    case_embedding = pad_array(case_embedding)
-                    case_embeddings.append(case_embedding)
-                    # print(f'Embedded string {i} out of {len(data)}.')
+    def on_faithfulness_calculated(self, kwargs):
+        faithfulness_scores = kwargs.get("faithfulness_scores")
+        pid = kwargs.get("pid")
 
-                xdnn_algo = xDNNAlgorithmAdapter()
-                kwargs["mode"] = "Classify"
+        for worker in workers:
+            if str(pid) == worker:
+                workers[str(pid)] = faithfulness_scores
 
-                kwargs["features"] = np.asarray(case_embeddings)
+        if not None in workers:
 
-                xdnn_algo.run(callback=self.xdnn_callback, **kwargs)
+            all_faithfulness_scores = []
 
-                while self.local_data().get("results") is None:
-                    pass
+            for key, value in workers.items():
+                all_faithfulness_scores.extend(value)
 
-                scores = self.local_data().get("results").get("Scores")
-                return scores
-
-    def xdnn_callback(self, results):
-        self.local_data()["results"] = results
-
-    def on_faithfulness_calculated(self, data):
-        data_np = np.asarray(data)
-        print(f'Faithfulness len: {len(data_np)}, min: {np.min(data_np)}, max: {np.max(data)}')
-        broadcast_data({"faithfulness_scores": data})
+            broadcast_data({"faithfulness_scores": all_faithfulness_scores})
 
     def on_event_happened(self, data_event: DataEvent):
         super().on_event_happened(data_event.value())
+
