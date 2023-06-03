@@ -104,7 +104,7 @@ def get_top_k_similar_cases(index: int, k: int, predicted_label: int, xdnn_train
 
     in_label_similarities = list(similarities[index][predicted_label])
 
-    training_parameters = xdnn_training_results.get("xDNNParms").get("Parameters")
+    training_parameters = xdnn_training_results.get("Parameters")
     classes = list(training_parameters[predicted_label].get("Prototype").values())
 
     sorted_in_label_similarities, original_indices = sort_with_indices(in_label_similarities)

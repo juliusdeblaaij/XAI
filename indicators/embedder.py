@@ -33,11 +33,10 @@ class Embedder(CompositeIndicator):
         vectorizer_algo = TfidfVectorizerAlgorithmAdapter()
         vectorizer_algo.run(callback=self.on_cases_embedded, **kwargs)
 
-    def on_cases_embedded(self, data):
+    def on_cases_embedded(self, kwargs):
+        features = kwargs.get("embeddings")
 
-        data = list(data)
-
-        broadcast_data({"features": data})
+        broadcast_data({"features": list(features)})
 
 
     def on_event_happened(self, data_event: DataEvent):

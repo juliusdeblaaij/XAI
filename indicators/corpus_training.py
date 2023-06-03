@@ -36,7 +36,8 @@ class CorpusTrainer(CompositeIndicator):
         vectorizer_algo = TfidfVectorizerAlgorithmAdapter()
         vectorizer_algo.run(callback=self.on_vectorizer_trained, **kwargs)
 
-    def on_vectorizer_trained(self, vectorizer_file_path):
+    def on_vectorizer_trained(self, kwargs):
+        vectorizer_file_path = kwargs.get('vectorizer_file_path')
         broadcast_data({"vectorizer_file_path": vectorizer_file_path})
 
     def on_event_happened(self, data_event: DataEvent):

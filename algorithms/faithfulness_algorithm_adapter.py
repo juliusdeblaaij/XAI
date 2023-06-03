@@ -6,14 +6,12 @@ from algorithms.faithfulness_algorithm import FaithfulnessAlgorithm
 
 class FaithfulnessAlgorithmAdapter(AlgorithmAdapter):
 
-    _callback_queue = Queue()
-    _external_callback = None
-    pid = 0
-
     def run(self, callback, daemon=False, **kwargs):
-        self._external_callback = callback
-        algo = FaithfulnessAlgorithm(callback_queue=self._callback_queue,
-                              daemon=daemon,
-                              callback=self._internal_callback,
-                              **kwargs)
+        self.external_callback = callback
+        callback_queue = Queue()
+        algo = FaithfulnessAlgorithm(callback_queue=callback_queue,
+                            daemon=daemon,
+                            callback=self._internal_callback,
+                            **kwargs)
         self.pid = algo.pid
+        self.callback_queues[str(self.pid)] = callback_queue

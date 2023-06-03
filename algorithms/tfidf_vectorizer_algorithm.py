@@ -1,4 +1,5 @@
 import csv
+from multiprocessing import current_process
 from os import path
 
 import joblib
@@ -28,7 +29,12 @@ class TfidfVectorizerAlgorithm(AbstractNonBlockingProcess):
             vectorizer_file_path = path.join(r"C:\Users\SKIKK\PycharmProjects\XAI", "vectorizer.pkl")
             joblib.dump(vectorizer, vectorizer_file_path)
 
-            return vectorizer_file_path
+            result = {
+                "vectorizer_file_path": vectorizer_file_path,
+                "pid": current_process().pid
+            }
+
+            return result
 
         if mode == "Embedding":
             if vectorizer_file_path is None:
@@ -67,4 +73,9 @@ class TfidfVectorizerAlgorithm(AbstractNonBlockingProcess):
 
                     embeddings_writer.writerows(embeddings)
 
-            return embeddings
+            result = {
+                "embeddings": embeddings,
+                "pid": current_process().pid
+            }
+
+            return result

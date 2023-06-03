@@ -33,7 +33,15 @@ class DatasetOutput(CompositeIndicator):
         self.input_data().clear()
 
         cases = np.array(kwargs.get("testing_cases"))
+        cases = np.char.replace(cases, '\n', ' ')
+        cases = np.char.replace(cases, ';', ' ')
+        cases = np.char.replace(cases, '"', '')
+
         original_cases = np.array(kwargs.get("testing_original_cases"))
+        original_cases = np.char.replace(original_cases, '\n', ' ')
+        original_cases = np.char.replace(original_cases, ';', ' ')
+        original_cases = np.char.replace(original_cases, '"', '')
+
         ids = []
 
         for i in range(0, len(cases)):
@@ -43,7 +51,11 @@ class DatasetOutput(CompositeIndicator):
 
         labels = np.array(kwargs.get("testing_labels"))
         predicted_labels = np.array(kwargs.get("classification_results").get("EstLabs").flatten()).astype(int)
+
         explanations = kwargs.get("explanations")
+        explanations = np.char.replace(explanations, '\n', ' ')
+        explanations = np.char.replace(explanations, ';', ' ')
+        explanations = np.char.replace(explanations, '"', '')
 
         meaningfulness = np.around(np.array(kwargs.get("meaningfulness_scores")), 2)
         explanation_accuracy_decisions = np.array(kwargs.get("explanation_accuracy_decisions")).astype(int)
@@ -56,14 +68,7 @@ class DatasetOutput(CompositeIndicator):
         faithfulness_scores =  np.around(np.asarray(kwargs.get("faithfulness_scores")))
         acceptability_scores = np.around(np.asarray(kwargs.get("acceptability_scores")),2)
 
-        """explanations_with_cases = []
-        for i, explanation in enumerate(explanations):
-            explanation = explanation.replace('\n', ' ')
-            explanation = explanation.replace(';', ' ')
-            explanation.replace('{case}', cases[i])
-            explanations_with_cases.append(explanation)"""
-
-        df = pd.DataFrame({"id": ids, "x_test": cases, "y_test": labels, "y_pred": predicted_labels,
+        df = pd.DataFrame({"id": ids, "x_test": original_cases, "y_test": labels, "y_pred": predicted_labels,
                            "explanations": explanations,
 
                            "meaningfulness": meaningfulness,

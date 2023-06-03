@@ -1,3 +1,5 @@
+from multiprocessing import current_process
+
 from non_blocking_process import AbstractNonBlockingProcess
 from run_xdnn import RunxDNN
 
@@ -20,7 +22,12 @@ class xDNNAlgorithm(AbstractNonBlockingProcess):
 
             training_results = xDNN.train(cases=cases, features=features, labels=labels)
 
-            return training_results
+            result = {
+                "training_results": training_results["xDNNParms"],
+                "pid": current_process().pid
+            }
+
+            return result
 
         if mode == "Classify":
             training_results = xDNN.load_training_results()
@@ -31,4 +38,11 @@ class xDNNAlgorithm(AbstractNonBlockingProcess):
                 raise ValueError('Tried to run xDNN classification without providing features.')
             classification_results = xDNN.classify(training_results=training_results, features=features)
 
-            return classification_results
+            result = {
+                "classification_results": {"EstLabs": classification_results["EstLabs"],
+                                           "Scores": classification_results["Scores"],
+                                           "Similarities": classification_results["Similarities"]},
+                "pid": current_process().pid
+            }
+
+            return result

@@ -37,7 +37,7 @@ class MeaningfulnessIndicator(CompositeIndicator):
 
         self.local_data()["workers"] = OrderedDict()
 
-        split_explanations = np.array_split(np.asarray(all_explanations), 4)
+        split_explanations = np.array_split(np.asarray(all_explanations), 8)
         for explanations in split_explanations:
             kwargs = {"explanandum_aspects": explanandum_aspects,
                       "cases": explanations}
@@ -55,12 +55,12 @@ class MeaningfulnessIndicator(CompositeIndicator):
             if str(pid) == worker:
                 workers[str(pid)] = faithfulness_scores
 
-        if not None in workers:
+        if not None in workers.values():
 
             all_meaningfulness_scores = []
 
-            for key, value in workers.items():
-                all_meaningfulness_scores.extend(value)
+            for meaningfulness_scores in workers.values():
+                all_meaningfulness_scores.extend(meaningfulness_scores)
 
             broadcast_data({"meaningfulness_scores": all_meaningfulness_scores})
 

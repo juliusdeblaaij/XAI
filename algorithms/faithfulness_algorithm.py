@@ -147,5 +147,5 @@ class FaithfulnessAlgorithm(AbstractNonBlockingProcess):
                 scores = self.local_data().get("results").get("Scores")
                 return scores
 
-    def xdnn_callback(self, results):
-        self.local_data()["results"] = results
+    def xdnn_callback(self, kwargs):
+        self.local_data()["results"] = kwargs.get("classification_results")

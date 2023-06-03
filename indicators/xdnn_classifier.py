@@ -46,8 +46,8 @@ class xDNNClassifier(CompositeIndicator):
         xdnn_algo = xDNNAlgorithmAdapter()
         xdnn_algo.run(callback=self.on_xdnn_classified, **kwargs)
 
-    def on_xdnn_classified(self, data):
-        broadcast_data({"classification_results": data})
+    def on_xdnn_classified(self, kwargs):
+        broadcast_data({"classification_results": kwargs.get("classification_results")})
 
     def on_event_happened(self, data_event: DataEvent):
         super().on_event_happened(data_event.value())

@@ -1,15 +1,19 @@
 import multiprocessing
 from abc import abstractmethod, ABC
+from collections import OrderedDict
 from multiprocessing import Queue
+from typing import Callable
 
 
 class AlgorithmAdapter(ABC):
-    _callback_queue = Queue()
-    _external_callback = None
 
-    def _internal_callback(self, result):
-        self._callback_queue.put(None)
-        self._external_callback(result)
+    callback_queues = OrderedDict()
+    pid = 0
+    external_callback: Callable
+
+    def _internal_callback(self, kwargs):
+        self.callback_queues[str(kwargs.get("pid"))].put(None)
+        self.external_callback(kwargs)
 
     @abstractmethod
     def run(self, callback, daemon=False, **kwargs):

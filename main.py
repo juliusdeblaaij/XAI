@@ -52,6 +52,7 @@ if __name__ == "__main__":
     xdnn_trainer = xDNNTrainer()
     xdnn_classifier = xDNNClassifier()
 
+    meaningfulness_indicator = MeaningfulnessIndicator()
     faithfulness_indicator = FaithfulnessIndicator()
     embedder = Embedder()
     dataset_splitter = DatasetSplitter()
@@ -59,7 +60,6 @@ if __name__ == "__main__":
     audience_knowledge_graphs_extractor = AudienceAspectsExtractor()
     audience_acceptability_indicator = AudienceAcceptabilityIndicator()
     explanation_accuracy_indicator = ExplanationAccuracyIndicator()
-    meaningfulness_indicator = MeaningfulnessIndicator()
     adherence_to_knowledge_limits_indicator = AdherenceToKnowledgeLimitsIndicator()
     dataset_output = DatasetOutput()
 

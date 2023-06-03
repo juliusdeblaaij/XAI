@@ -70,7 +70,7 @@ class AdherenceToKnowledgeLimitsIndicator(CompositeIndicator):
                 if case_label_max_similarity > max_case_label_similarity:
                     max_case_label_similarity = case_label_max_similarity
 
-            training_parameters = xdnn_training_results.get("xDNNParms").get("Parameters")
+            training_parameters = xdnn_training_results.get("Parameters")
             classes = list(training_parameters[predicted_label].get("Prototype").values())
 
             sorted_in_label_similarities, original_indices = sort_with_indices(case_predicted_label_similarities)

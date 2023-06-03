@@ -1,4 +1,5 @@
 import re
+from multiprocessing import current_process
 
 from fuzzy_expert.inference import DecompositionalInference
 from fuzzy_expert.rule import FuzzyRule
@@ -135,4 +136,9 @@ class AudienceAcceptabilityAlgorithm(AbstractNonBlockingProcess):
                 if 100 % i == 0:
                     print(f"Calculated acceptability scores {i} / {len(explanations)}")
 
-        return acceptability_scores
+        result = {
+            "acceptability_scores": acceptability_scores,
+            "pid": current_process().pid
+        }
+
+        return result

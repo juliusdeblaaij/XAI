@@ -37,8 +37,8 @@ class xDNNTrainer(CompositeIndicator):
         xdnn_algo = xDNNAlgorithmAdapter()
         xdnn_algo.run(callback=self.on_xdnn_trained, **kwargs)
     
-    def on_xdnn_trained(self, data):
-        broadcast_data({"training_results": data})
+    def on_xdnn_trained(self, kwargs):
+        broadcast_data({"training_results": kwargs.get("training_results")})
 
     def on_event_happened(self, data_event: DataEvent):
         super().on_event_happened(data_event.value())

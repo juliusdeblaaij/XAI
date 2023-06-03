@@ -1,3 +1,5 @@
+from multiprocessing import current_process
+
 from dataset_cleaner import filter_allowed_words, filter_allowed_words_in_sentences
 from doxpy.models.estimation.dox_estimator import DoXEstimator
 from doxpy.models.knowledge_extraction.knowledge_graph_manager import KnowledgeGraphManager
@@ -63,9 +65,9 @@ class DoXAlgorithm(AbstractNonBlockingProcess):
             average_dox_scores.append(average_dox)
             print(f"Calculated {i + 1} out of {len(cases)} DoX.")
 
-        kwargs = {
+        result = {
             "average_dox_scores": average_dox_scores,
-            "pid": self.pid,
+            "pid": current_process().pid
         }
 
-        return kwargs
+        return result
