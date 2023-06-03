@@ -35,10 +35,7 @@ if __name__ == "__main__":
         if row[2] is None or row[2] == ' ':
             continue
 
-        if i > 100:
-            break
-
-        label = int(row[2]) - 1
+        label = int(row[2])
         labels.append(label)
 
         case = row[1]
