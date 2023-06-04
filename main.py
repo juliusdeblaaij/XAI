@@ -49,8 +49,8 @@ if __name__ == "__main__":
     xdnn_trainer = xDNNTrainer()
     xdnn_classifier = xDNNClassifier()
 
-    meaningfulness_indicator = MeaningfulnessIndicator()
     faithfulness_indicator = FaithfulnessIndicator()
+    meaningfulness_indicator = MeaningfulnessIndicator()
     embedder = Embedder()
     dataset_splitter = DatasetSplitter()
     explanation_generator = ExplanationsGenerator()

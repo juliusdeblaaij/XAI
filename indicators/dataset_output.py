@@ -68,6 +68,7 @@ class DatasetOutput(CompositeIndicator):
         faithfulness_scores =  np.around(np.asarray(kwargs.get("faithfulness_scores")))
         acceptability_scores = np.around(np.asarray(kwargs.get("acceptability_scores")),2)
 
+        print("Creating Panda's dataframe and starting writing to file.")
         df = pd.DataFrame({"id": ids, "x_test": original_cases, "y_test": labels, "y_pred": predicted_labels,
                            "explanations": explanations,
 
@@ -82,7 +83,7 @@ class DatasetOutput(CompositeIndicator):
                            "similarity_threshold": adherence_to_similarity_threshold_flags,
                            "adherence_to_knowledge_limits": adherence_to_knowledge_limits})
 
-        df.to_csv("xai_results.csv", index=False, sep=';', quotechar='"')
+        df.to_csv(r"C:\Users\SKIKK\PycharmProjects\XAI\xai_results.csv", index=False, sep=';', quotechar='"')
 
     def on_event_happened(self, data_event: DataEvent):
         super().on_event_happened(data_event.value())

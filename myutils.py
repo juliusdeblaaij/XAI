@@ -18,7 +18,7 @@ def pre_process_text(text):
 
 def pad_array(arr):
     # Find the length of the longest element in the array
-    max_length = 300
+    max_length = 200
 
     # Create an empty result array with the same shape as the input array
     result = np.empty_like(arr, dtype=object)

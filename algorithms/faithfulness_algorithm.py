@@ -42,7 +42,7 @@ class FaithfulnessAlgorithm(AbstractNonBlockingProcess):
             case_explanation = explainer.explain_instance(text_instance=case,
                                              classifier_fn=self.classifier_fn,
                                              top_labels=10,
-                                             num_samples=500) # 500
+                                             num_samples=50) # 500
 
 
 

@@ -55,7 +55,7 @@ class FaithfulnessIndicator(CompositeIndicator):
 
         case_details = np.column_stack((all_cleaned_cases, all_predicted_labels, all_explanations))
 
-        split_case_details = np.array_split(np.asarray(case_details), 8)
+        split_case_details = np.array_split(np.asarray(case_details), 1)
         for case_details in split_case_details:
 
             batch_cleaned_cases, batch_predicted_labels, batch_explanations = np.array_split(case_details, 3, 1)
@@ -81,6 +81,7 @@ class FaithfulnessIndicator(CompositeIndicator):
         for worker in workers:
             if str(pid) == worker:
                 workers[str(pid)] = faithfulness_scores
+                print("Finished ")
 
         if not None in workers.values():
 
